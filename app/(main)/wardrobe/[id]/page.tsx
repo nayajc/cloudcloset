@@ -141,6 +141,12 @@ export default function ClothingDetailPage() {
                 ))}
               </div>
             </div>
+            {item.location && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-500">위치</span>
+                <span className="text-sm font-medium">{item.location}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500">계절</span>
               <div className="flex gap-1">

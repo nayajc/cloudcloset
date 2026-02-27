@@ -68,6 +68,7 @@ export function useWardrobe(userId?: string) {
           colors: analysis.colors,
           style: analysis.style,
           seasons: analysis.seasons,
+          location: analysis.location,
           is_active: true,
         })
         .select()

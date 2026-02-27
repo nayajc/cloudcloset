@@ -22,7 +22,8 @@ export function Navbar() {
       {/* 상단 헤더 */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b">
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="font-bold text-lg tracking-tight">
+          <Link href="/" className="font-bold text-lg tracking-tight flex items-center gap-2">
+            <img src="/logo.png" alt="CloudCloset" className="w-6 h-6 rounded border" />
             CloudCloset
           </Link>
           {user && (

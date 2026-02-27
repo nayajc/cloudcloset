@@ -11,6 +11,7 @@ export interface ClothingItem {
   colors: string[]
   style: ClothingStyle
   seasons: Season[]
+  location?: string | null
   is_active: boolean
   created_at: string
 }
@@ -51,4 +52,5 @@ export interface ClothingAnalysis {
   colors: string[]
   style: ClothingStyle
   seasons: Season[]
+  location?: string | null
 }

@@ -130,17 +130,27 @@ export function ClothingUpload({ onSave }: Props) {
           </div>
 
           <div>
+            <label className="text-xs text-gray-500 mb-1 block">위치 (예: 첫번째 서랍, 2번째 방 옷장)</label>
+            <input
+              type="text"
+              value={analysis.location || ''}
+              onChange={(e) => setAnalysis({ ...analysis, location: e.target.value })}
+              placeholder="옷이 보관된 위치를 입력하세요"
+              className="w-full rounded-lg border px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div>
             <label className="text-xs text-gray-500 mb-1 block">카테고리</label>
             <div className="flex gap-2">
               {(['upwear', 'downwear'] as const).map((c) => (
                 <button
                   key={c}
                   onClick={() => setAnalysis({ ...analysis, category: c })}
-                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${
-                    analysis.category === c
+                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${analysis.category === c
                       ? 'bg-black text-white border-black'
                       : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
-                  }`}
+                    }`}
                 >
                   {c === 'upwear' ? '상의' : '하의'}
                 </button>
@@ -155,11 +165,10 @@ export function ClothingUpload({ onSave }: Props) {
                 <button
                   key={s}
                   onClick={() => setAnalysis({ ...analysis, style: s })}
-                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${
-                    analysis.style === s
+                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${analysis.style === s
                       ? 'bg-black text-white border-black'
                       : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
-                  }`}
+                    }`}
                 >
                   {STYLE_LABEL[s]}
                 </button>
@@ -179,11 +188,10 @@ export function ClothingUpload({ onSave }: Props) {
                       : [...analysis.seasons, s]
                     setAnalysis({ ...analysis, seasons })
                   }}
-                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${
-                    analysis.seasons.includes(s)
+                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${analysis.seasons.includes(s)
                       ? 'bg-black text-white border-black'
                       : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
-                  }`}
+                    }`}
                 >
                   {SEASON_LABEL[s]}
                 </button>

@@ -37,7 +37,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 flex flex-col items-center">
+          <img src="/logo.png" alt="CloudCloset Logo" className="w-16 h-16 rounded-2xl shadow-sm mb-4 border" />
           <h1 className="text-3xl font-bold tracking-tight">CloudCloset</h1>
           <p className="text-gray-500 text-sm mt-2">내 옷장 기반 AI 코디 추천</p>
         </div>
