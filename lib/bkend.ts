@@ -80,7 +80,9 @@ export const bkendAuth = {
     const data = await res.json()
     if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
     saveTokens(data.accessToken, data.refreshToken)
-    return data
+    // API가 user 필드를 반환하지 않을 수 있으므로 /auth/me로 보완
+    const user = data.user ?? (await bkendAuth.getUser())
+    return { ...data, user }
   },
 
   /**
@@ -95,7 +97,9 @@ export const bkendAuth = {
     const data = await res.json()
     if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
     saveTokens(data.accessToken, data.refreshToken)
-    return data
+    // API가 user 필드를 반환하지 않을 수 있으므로 /auth/me로 보완
+    const user = data.user ?? (await bkendAuth.getUser())
+    return { ...data, user }
   },
 
   /**
