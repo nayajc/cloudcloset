@@ -72,47 +72,53 @@ interface AuthResponse {
 
 export const bkendAuth = {
   /**
-   * 이메일 회원가입
-   * POST /v1/auth/email/signup
+   * 이메일 회원가입 (Next.js proxy → bkend.ai, CORS 방지)
    */
   async signUp(email: string, password: string): Promise<AuthResponse> {
-    const data = await bkendFetch<AuthResponse>('/auth/email/signup', {
+    const res = await fetch('/api/auth/signup', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
     saveTokens(data.accessToken, data.refreshToken)
     return data
   },
 
   /**
-   * 이메일 로그인
-   * POST /v1/auth/email/signin
+   * 이메일 로그인 (Next.js proxy → bkend.ai, CORS 방지)
    */
   async signIn(email: string, password: string): Promise<AuthResponse> {
-    const data = await bkendFetch<AuthResponse>('/auth/email/signin', {
+    const res = await fetch('/api/auth/signin', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
     saveTokens(data.accessToken, data.refreshToken)
     return data
   },
 
   /**
-   * 현재 로그인 사용자 정보
-   * GET /v1/auth/me
+   * 현재 로그인 사용자 정보 (Next.js proxy → bkend.ai)
    */
   async getUser(): Promise<{ id: string; email: string } | null> {
     try {
-      const data = await bkendFetch<{ id: string; email: string }>('/auth/me')
-      return data
+      const token = getAccessToken()
+      const res = await fetch('/api/auth/me', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      if (!res.ok) return null
+      return res.json()
     } catch {
       return null
     }
   },
 
   /**
-   * Access Token 갱신
-   * POST /v1/auth/refresh
+   * Access Token 갱신 (Next.js proxy → bkend.ai)
    */
   async refresh(): Promise<boolean> {
     const refreshToken =
@@ -121,10 +127,13 @@ export const bkendAuth = {
         : null
     if (!refreshToken) return false
     try {
-      const data = await bkendFetch<AuthResponse>('/auth/refresh', {
+      const res = await fetch('/api/auth/refresh', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken }),
       })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
       saveTokens(data.accessToken, data.refreshToken)
       return true
     } catch {
@@ -134,12 +143,15 @@ export const bkendAuth = {
   },
 
   /**
-   * 로그아웃
-   * POST /v1/auth/signout
+   * 로그아웃 (Next.js proxy → bkend.ai)
    */
   async signOut(): Promise<void> {
     try {
-      await bkendFetch('/auth/signout', { method: 'POST' })
+      const token = getAccessToken()
+      await fetch('/api/auth/signout', {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
     } finally {
       clearTokens()
     }
