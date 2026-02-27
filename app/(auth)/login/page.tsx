@@ -67,6 +67,11 @@ export default function LoginPage() {
                 required
                 minLength={8}
               />
+              {mode === 'signup' && (
+                <p className="text-xs text-gray-400">
+                  대문자·소문자·숫자·특수문자 포함 8자 이상
+                </p>
+              )}
             </div>
 
             {error && (

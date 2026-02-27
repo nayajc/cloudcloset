@@ -24,9 +24,15 @@ export async function POST(request: NextRequest) {
       }),
     })
 
-    const data = await res.json().catch(() => ({ message: res.statusText }))
-    const message = data.message ?? data.error?.message ?? `HTTP ${res.status}`
-    return NextResponse.json({ ...data, message }, { status: res.status })
+    const body = await res.json().catch(() => null)
+
+    if (!res.ok) {
+      const message = body?.error?.message ?? `HTTP ${res.status}`
+      return NextResponse.json({ message }, { status: res.status })
+    }
+
+    // success: { success: true, data: { accessToken, refreshToken, ... } }
+    return NextResponse.json(body?.data ?? body, { status: res.status })
   } catch (err) {
     console.error('[signin proxy error]', err)
     return NextResponse.json(

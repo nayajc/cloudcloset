@@ -25,9 +25,20 @@ export async function POST(request: NextRequest) {
       }),
     })
 
-    const data = await res.json().catch(() => ({ message: res.statusText }))
-    const message = data.message ?? data.error?.message ?? `HTTP ${res.status}`
-    return NextResponse.json({ ...data, message }, { status: res.status })
+    const body = await res.json().catch(() => null)
+
+    if (!res.ok) {
+      // bkend.ai error: { success: false, error: { code, message, details } }
+      const fieldErrors = body?.error?.details?.fieldErrors
+      let message = body?.error?.message ?? `HTTP ${res.status}`
+      if (fieldErrors?.password?.includes('auth/invalid-password-format')) {
+        message = '비밀번호는 대문자, 소문자, 숫자, 특수문자를 모두 포함해야 합니다'
+      }
+      return NextResponse.json({ message }, { status: res.status })
+    }
+
+    // success: { success: true, data: { accessToken, refreshToken, ... } }
+    return NextResponse.json(body?.data ?? body, { status: res.status })
   } catch (err) {
     console.error('[signup proxy error]', err)
     return NextResponse.json(
