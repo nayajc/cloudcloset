@@ -1,140 +1,302 @@
 /**
- * bkend.ai REST API 클라이언트
- * Docs: https://bkend.ai/docs
+ * bkend.ai REST Service API 클라이언트
+ * Base URL: https://api.bkend.ai/v1
+ * Docs: https://github.com/popup-studio-ai/bkend-docs
+ *
+ * 필수 헤더:
+ *   x-project-id: 프로젝트 ID (console.bkend.ai에서 확인)
+ *   x-environment: dev | staging | prod
+ *   Authorization: Bearer {accessToken}  (인증 필요 엔드포인트)
  */
 
-const BKEND_URL = process.env.NEXT_PUBLIC_BKEND_URL!
-const BKEND_KEY = process.env.NEXT_PUBLIC_BKEND_KEY!
+const API_BASE = 'https://api.bkend.ai/v1'
+const PROJECT_ID = process.env.NEXT_PUBLIC_BKEND_PROJECT_ID!
+const ENVIRONMENT = process.env.NEXT_PUBLIC_BKEND_ENV || 'dev'
 
-function getAuthHeader(): Record<string, string> {
-  if (typeof window === 'undefined') return {}
-  const token = localStorage.getItem('bkend_access_token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
+// ── Token 관리 ───────────────────────────────────────────────────────────────
+
+const TOKEN_KEY = 'bkend_access_token'
+const REFRESH_KEY = 'bkend_refresh_token'
+
+function getAccessToken(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem(TOKEN_KEY)
 }
 
-async function request<T>(
+function saveTokens(accessToken: string, refreshToken?: string) {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(TOKEN_KEY, accessToken)
+  if (refreshToken) localStorage.setItem(REFRESH_KEY, refreshToken)
+}
+
+function clearTokens() {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(REFRESH_KEY)
+}
+
+// ── Base Fetch ───────────────────────────────────────────────────────────────
+
+async function bkendFetch<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const res = await fetch(`${BKEND_URL}${path}`, {
+  const token = getAccessToken()
+
+  const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': BKEND_KEY,
-      ...getAuthHeader(),
+      'x-project-id': PROJECT_ID,
+      'x-environment': ENVIRONMENT,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   })
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: res.statusText }))
-    throw new Error(err.message ?? 'Request failed')
+    throw new Error(err.message ?? `HTTP ${res.status}`)
   }
+
   return res.json()
 }
 
-// ── Auth ────────────────────────────────────────────────────────────────────
+// ── Auth ─────────────────────────────────────────────────────────────────────
+
+interface AuthResponse {
+  accessToken: string
+  refreshToken: string
+  user: { id: string; email: string }
+}
 
 export const bkendAuth = {
-  async signUp(email: string, password: string) {
-    const data = await request<{ access_token: string; user: { id: string; email: string } }>(
-      '/auth/signup',
-      { method: 'POST', body: JSON.stringify({ email, password }) }
-    )
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('bkend_access_token', data.access_token)
-    }
+  /**
+   * 이메일 회원가입
+   * POST /v1/auth/email/signup
+   */
+  async signUp(email: string, password: string): Promise<AuthResponse> {
+    const data = await bkendFetch<AuthResponse>('/auth/email/signup', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    })
+    saveTokens(data.accessToken, data.refreshToken)
     return data
   },
 
-  async signIn(email: string, password: string) {
-    const data = await request<{ access_token: string; user: { id: string; email: string } }>(
-      '/auth/signin',
-      { method: 'POST', body: JSON.stringify({ email, password }) }
-    )
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('bkend_access_token', data.access_token)
-    }
+  /**
+   * 이메일 로그인
+   * POST /v1/auth/email/signin
+   */
+  async signIn(email: string, password: string): Promise<AuthResponse> {
+    const data = await bkendFetch<AuthResponse>('/auth/email/signin', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    })
+    saveTokens(data.accessToken, data.refreshToken)
     return data
   },
 
-  async signOut() {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('bkend_access_token')
-    }
-  },
-
+  /**
+   * 현재 로그인 사용자 정보
+   * GET /v1/auth/me
+   */
   async getUser(): Promise<{ id: string; email: string } | null> {
     try {
-      const data = await request<{ id: string; email: string }>('/auth/me')
+      const data = await bkendFetch<{ id: string; email: string }>('/auth/me')
       return data
     } catch {
       return null
     }
   },
 
+  /**
+   * Access Token 갱신
+   * POST /v1/auth/refresh
+   */
+  async refresh(): Promise<boolean> {
+    const refreshToken =
+      typeof window !== 'undefined'
+        ? localStorage.getItem(REFRESH_KEY)
+        : null
+    if (!refreshToken) return false
+    try {
+      const data = await bkendFetch<AuthResponse>('/auth/refresh', {
+        method: 'POST',
+        body: JSON.stringify({ refreshToken }),
+      })
+      saveTokens(data.accessToken, data.refreshToken)
+      return true
+    } catch {
+      clearTokens()
+      return false
+    }
+  },
+
+  /**
+   * 로그아웃
+   * POST /v1/auth/signout
+   */
+  async signOut(): Promise<void> {
+    try {
+      await bkendFetch('/auth/signout', { method: 'POST' })
+    } finally {
+      clearTokens()
+    }
+  },
+
   getToken(): string | null {
-    if (typeof window === 'undefined') return null
-    return localStorage.getItem('bkend_access_token')
+    return getAccessToken()
+  },
+
+  isAuthenticated(): boolean {
+    return !!getAccessToken()
   },
 }
 
-// ── Database ────────────────────────────────────────────────────────────────
+// ── Database (Data CRUD) ──────────────────────────────────────────────────────
+
+interface ListResponse<T> {
+  data: T[]
+  total: number
+  page: number
+  limit: number
+}
 
 export const bkendDB = {
-  async list<T>(table: string, params?: Record<string, string>): Promise<T[]> {
+  /**
+   * 목록 조회
+   * GET /v1/data/{table}
+   * 필터: ?filter[field]=value, 정렬: ?sort=field:asc, 페이지: ?page=1&limit=20
+   */
+  async list<T>(
+    table: string,
+    params?: Record<string, string>
+  ): Promise<T[]> {
     const qs = params ? '?' + new URLSearchParams(params).toString() : ''
-    const data = await request<{ data: T[] }>(`/data/${table}${qs}`)
+    const data = await bkendFetch<ListResponse<T>>(`/data/${table}${qs}`)
     return data.data
   },
 
+  /**
+   * 단일 조회
+   * GET /v1/data/{table}/{id}
+   */
   async get<T>(table: string, id: string): Promise<T> {
-    const data = await request<{ data: T }>(`/data/${table}/${id}`)
+    const data = await bkendFetch<{ data: T }>(`/data/${table}/${id}`)
     return data.data
   },
 
-  async create<T>(table: string, body: Omit<T, 'id' | 'created_at'>): Promise<T> {
-    const data = await request<{ data: T }>(`/data/${table}`, {
+  /**
+   * 생성
+   * POST /v1/data/{table}
+   */
+  async create<T>(
+    table: string,
+    body: Omit<T, 'id' | 'created_at'>
+  ): Promise<T> {
+    const data = await bkendFetch<{ data: T }>(`/data/${table}`, {
       method: 'POST',
       body: JSON.stringify(body),
     })
     return data.data
   },
 
+  /**
+   * 부분 업데이트
+   * PATCH /v1/data/{table}/{id}
+   */
   async update<T>(table: string, id: string, body: Partial<T>): Promise<T> {
-    const data = await request<{ data: T }>(`/data/${table}/${id}`, {
+    const data = await bkendFetch<{ data: T }>(`/data/${table}/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(body),
     })
     return data.data
   },
 
+  /**
+   * 삭제
+   * DELETE /v1/data/{table}/{id}
+   */
   async delete(table: string, id: string): Promise<void> {
-    await request(`/data/${table}/${id}`, { method: 'DELETE' })
+    await bkendFetch(`/data/${table}/${id}`, { method: 'DELETE' })
   },
 }
 
-// ── Storage ─────────────────────────────────────────────────────────────────
+// ── Storage (Presigned URL 방식) ──────────────────────────────────────────────
+
+interface PresignedUrlResponse {
+  url: string      // PUT 업로드 대상 URL (15분 유효)
+  fileId: string   // 메타데이터 등록 시 사용
+}
+
+interface FileMetadata {
+  id: string
+  url: string
+  filename: string
+  contentType: string
+  size: number
+  visibility: string
+}
 
 export const bkendStorage = {
-  async upload(bucket: string, path: string, file: File): Promise<string> {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('path', path)
+  /**
+   * 파일 업로드 (Presigned URL 방식)
+   *
+   * 흐름:
+   *   1. POST /v1/files/presigned-url  -> { url, fileId }
+   *   2. PUT {url} with file binary
+   *   3. POST /v1/files               -> 메타데이터 등록 -> 최종 URL 반환
+   */
+  async upload(
+    file: File,
+    path: string,
+    visibility: 'public' | 'private' | 'protected' = 'protected'
+  ): Promise<string> {
+    // Step 1: Presigned URL 요청
+    const { url, fileId } = await bkendFetch<PresignedUrlResponse>(
+      '/files/presigned-url',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          filename: path,
+          contentType: file.type,
+          size: file.size,
+        }),
+      }
+    )
 
-    const res = await fetch(`${BKEND_URL}/storage/${bucket}/upload`, {
-      method: 'POST',
-      headers: {
-        'x-api-key': BKEND_KEY,
-        ...getAuthHeader(),
-      },
-      body: formData,
+    // Step 2: S3/CDN에 직접 업로드 (Content-Type 헤더 필수)
+    const uploadRes = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file,
     })
-    if (!res.ok) throw new Error('Upload failed')
-    const data = await res.json()
-    return data.url as string
+    if (!uploadRes.ok) throw new Error('File upload failed')
+
+    // Step 3: 메타데이터 등록
+    const meta = await bkendFetch<{ data: FileMetadata }>('/files', {
+      method: 'POST',
+      body: JSON.stringify({
+        fileId,
+        filename: file.name,
+        contentType: file.type,
+        size: file.size,
+        visibility,
+      }),
+    })
+
+    return meta.data.url
   },
 
-  getUrl(bucket: string, path: string): string {
-    return `${BKEND_URL}/storage/${bucket}/file/${path}`
+  /**
+   * 다운로드 URL 생성 (private/protected 파일용)
+   * GET /v1/files/{id}/download-url
+   */
+  async getDownloadUrl(fileId: string): Promise<string> {
+    const data = await bkendFetch<{ url: string }>(
+      `/files/${fileId}/download-url`
+    )
+    return data.url
   },
 }

@@ -30,7 +30,7 @@ export function useWardrobe(userId?: string) {
     async (file: File, analysis: ClothingAnalysis, userId: string) => {
       const ext = file.name.split('.').pop() ?? 'jpg'
       const path = `${userId}/${Date.now()}.${ext}`
-      const imageUrl = await bkendStorage.upload('clothing-images', path, file)
+      const imageUrl = await bkendStorage.upload(file, path, 'protected')
 
       const item = await bkendDB.create<ClothingItem>('clothing_items', {
         user_id: userId,
