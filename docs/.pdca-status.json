@@ -1,9 +1,29 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-27T09:16:53.892Z",
-  "activeFeatures": [],
-  "primaryFeature": null,
-  "features": {},
+  "lastUpdated": "2026-02-27T11:02:26.096Z",
+  "activeFeatures": [
+    "clothing-management"
+  ],
+  "primaryFeature": "clothing-management",
+  "features": {
+    "clothing-management": {
+      "phase": "report",
+      "matchRate": 95,
+      "iterationCount": 0,
+      "startedAt": "2026-02-27T10:30:00.000Z",
+      "documents": {
+        "plan": "docs/01-plan/features/clothing-management.plan.md",
+        "design": "docs/02-design/features/clothing-management.design.md",
+        "analysis": "docs/03-analysis/clothing-management.analysis.md"
+      },
+      "phaseNumber": 6,
+      "previousPhase": "check",
+      "autoAdvanced": true,
+      "timestamps": {
+        "lastUpdated": "2026-02-27T11:02:26.095Z"
+      }
+    }
+  },
   "pipeline": {
     "currentPhase": 1,
     "level": "Dynamic",
@@ -12,7 +32,35 @@
   "session": {
     "startedAt": "2026-02-27T09:16:53.892Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-27T09:16:53.892Z"
+    "lastActivity": "2026-02-27T11:02:26.096Z"
   },
-  "history": []
+  "history": [
+    {
+      "action": "plan_created",
+      "feature": "clothing-management",
+      "timestamp": "2026-02-27T10:30:00.000Z"
+    },
+    {
+      "action": "design_created",
+      "feature": "clothing-management",
+      "timestamp": "2026-02-27T10:35:00.000Z"
+    },
+    {
+      "action": "do_completed",
+      "feature": "clothing-management",
+      "timestamp": "2026-02-27T10:43:00.000Z"
+    },
+    {
+      "action": "check_completed",
+      "feature": "clothing-management",
+      "timestamp": "2026-02-27T10:50:00.000Z",
+      "matchRate": 95
+    },
+    {
+      "timestamp": "2026-02-27T11:02:26.096Z",
+      "feature": "clothing-management",
+      "phase": "report",
+      "action": "updated"
+    }
+  ]
 }

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "bkend": {
+      "type": "http",
+      "url": "https://api.bkend.ai/mcp"
+    }
+  }
+}
