@@ -7,7 +7,7 @@ import { useWeather } from '@/hooks/useWeather'
 import { OutfitCard } from '@/components/outfit/OutfitCard'
 import { WeatherWidget } from '@/components/weather/WeatherWidget'
 import { Button } from '@/components/ui/button'
-import { bkendDB } from '@/lib/bkend'
+import { supabase } from '@/lib/supabase'
 import type { OutfitCombo } from '@/lib/types'
 import { Sparkles, RefreshCw } from 'lucide-react'
 
@@ -41,7 +41,7 @@ export default function RecommendPage() {
       setOutfits(result)
 
       // DB에 저장
-      await bkendDB.create('outfit_recommendations', {
+      await supabase.from('outfit_recommendations').insert({
         user_id: user.id,
         weather_temp: weather.temp,
         weather_condition: weather.condition,

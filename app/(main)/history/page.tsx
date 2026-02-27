@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { bkendDB } from '@/lib/bkend'
+import { supabase } from '@/lib/supabase'
 import { OutfitCard } from '@/components/outfit/OutfitCard'
 import type { OutfitRecommendation } from '@/lib/types'
 import { Cloud } from 'lucide-react'
@@ -14,10 +14,16 @@ export default function HistoryPage() {
 
   useEffect(() => {
     if (!user) return
-    bkendDB
-      .list<OutfitRecommendation>('outfit_recommendations', { user_id: user.id })
-      .then((data) => setRecords(data.sort((a, b) => b.created_at.localeCompare(a.created_at))))
-      .finally(() => setLoading(false))
+    async function load() {
+      const { data } = await supabase
+        .from('outfit_recommendations')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+      setRecords((data as OutfitRecommendation[]) ?? [])
+      setLoading(false)
+    }
+    load()
   }, [user])
 
   if (loading) {
