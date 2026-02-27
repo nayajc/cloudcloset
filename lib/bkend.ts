@@ -1,17 +1,15 @@
 /**
  * bkend.ai REST Service API 클라이언트
- * Base URL: https://api.bkend.ai/v1
+ * Base URL: https://api-client.bkend.ai/v1
  * Docs: https://github.com/popup-studio-ai/bkend-docs
  *
  * 필수 헤더:
- *   x-project-id: 프로젝트 ID (console.bkend.ai에서 확인)
- *   x-environment: dev | staging | prod
+ *   X-API-Key: pk_publishable_key (console.bkend.ai → Settings에서 확인)
  *   Authorization: Bearer {accessToken}  (인증 필요 엔드포인트)
  */
 
-const API_BASE = 'https://api.bkend.ai/v1'
-const PROJECT_ID = process.env.NEXT_PUBLIC_BKEND_PROJECT_ID!
-const ENVIRONMENT = process.env.NEXT_PUBLIC_BKEND_ENV || 'dev'
+const API_BASE = 'https://api-client.bkend.ai/v1'
+const API_KEY = process.env.NEXT_PUBLIC_BKEND_PK!
 
 // ── Token 관리 ───────────────────────────────────────────────────────────────
 
@@ -47,8 +45,7 @@ async function bkendFetch<T>(
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      'x-project-id': PROJECT_ID,
-      'x-environment': ENVIRONMENT,
+      'X-API-Key': API_KEY,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
