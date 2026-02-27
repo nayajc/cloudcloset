@@ -19,5 +19,7 @@ export async function POST(request: NextRequest) {
     }),
   })
   const data = await res.json().catch(() => ({ message: res.statusText }))
-  return NextResponse.json(data, { status: res.status })
+  // bkend.ai 에러는 data.error.message 형태일 수 있으므로 정규화
+  const message = data.message ?? data.error?.message ?? `HTTP ${res.status}`
+  return NextResponse.json({ ...data, message }, { status: res.status })
 }
