@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const API_BASE = 'https://api-client.bkend.ai/v1'
-const API_KEY = process.env.NEXT_PUBLIC_BKEND_PK!
+const API_KEY = process.env.BKEND_PK!
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get('Authorization')

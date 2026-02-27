@@ -5,7 +5,7 @@ const API_BASE = 'https://api-client.bkend.ai/v1'
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json()
-    const apiKey = process.env.NEXT_PUBLIC_BKEND_PK
+    const apiKey = process.env.BKEND_PK
 
     if (!apiKey) {
       return NextResponse.json({ message: 'API key not configured' }, { status: 500 })

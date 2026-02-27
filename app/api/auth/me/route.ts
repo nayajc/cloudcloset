@@ -4,7 +4,7 @@ const API_BASE = 'https://api-client.bkend.ai/v1'
 
 export async function GET(request: NextRequest) {
   try {
-    const apiKey = process.env.NEXT_PUBLIC_BKEND_PK
+    const apiKey = process.env.BKEND_PK
     if (!apiKey) return NextResponse.json(null, { status: 401 })
 
     const authHeader = request.headers.get('Authorization')
