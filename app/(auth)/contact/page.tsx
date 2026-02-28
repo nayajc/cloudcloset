@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useTranslation } from '@/lib/i18n'
 import { Send, CheckCircle, Code2 } from 'lucide-react'
+import { BrandLogo } from '@/components/ui/BrandLogo'
 
 export default function ContactPage() {
     const { t } = useTranslation()
@@ -49,7 +50,7 @@ export default function ContactPage() {
                     <div className="w-14 h-14 bg-gradient-to-br from-sky-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
                         <Code2 className="w-7 h-7 text-white" />
                     </div>
-                    <h2 className="text-lg font-bold">CloudCloset</h2>
+                    <BrandLogo size="md" />
                     <p className="text-sm text-gray-500 mt-1">{t('contact.developedBy')}</p>
                     <p className="text-base font-semibold text-gray-700 mt-0.5">C.Threads</p>
                     <p className="text-xs text-gray-400 mt-3">{t('contact.tagline')}</p>

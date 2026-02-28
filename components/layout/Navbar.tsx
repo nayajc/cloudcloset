@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Shirt, Sparkles, Heart, LogOut, Languages } from 'lucide-react'
+import { BrandLogo } from '@/components/ui/BrandLogo'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/lib/i18n'
@@ -24,9 +25,8 @@ export function Navbar() {
       {/* 상단 헤더 */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b">
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="font-bold text-lg tracking-tight flex items-center gap-2">
-            <img src="/logo.png" alt="CloudCloset" className="w-6 h-6 rounded border" />
-            CloudCloset
+          <Link href="/" className="flex items-center">
+            <BrandLogo size="sm" showIcon />
           </Link>
           <div className="flex items-center gap-4">
             <button

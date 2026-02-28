@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { useTranslation, Language } from '@/lib/i18n'
 import { Languages, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { BrandLogo } from '@/components/ui/BrandLogo'
 
 // Re-using same style options from existing components
 const STYLES = [
@@ -83,9 +84,8 @@ export default function LoginPage() {
           </button>
         </div>
         <div className="text-center mb-8 flex flex-col items-center">
-          <img src="/logo.png" alt="CloudCloset Logo" className="w-16 h-16 rounded-2xl shadow-sm mb-4" />
-          <h1 className="text-3xl tracking-tight"><span className="font-extrabold" style={{ color: '#000DFF' }}>Cloud</span><span className="font-bold">Closet</span></h1>
-          <p className="text-gray-500 text-sm mt-2">{t('brand.subtitle')}</p>
+          <BrandLogo size="lg" showIcon />
+          <p className="text-gray-500 text-sm mt-4">{t('brand.subtitle')}</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border p-6">

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useTranslation, Language } from '@/lib/i18n'
 import { Languages } from 'lucide-react'
+import { BrandLogo } from '@/components/ui/BrandLogo'
 
 export default function UpdatePasswordPage() {
     const router = useRouter()
@@ -49,9 +50,8 @@ export default function UpdatePasswordPage() {
 
             <div className="w-full max-w-sm">
                 <div className="text-center mb-8 flex flex-col items-center">
-                    <img src="/logo.png" alt="CloudCloset Logo" className="w-16 h-16 rounded-2xl shadow-sm mb-4 border" />
-                    <h1 className="text-3xl font-bold tracking-tight">CloudCloset</h1>
-                    <p className="text-gray-500 text-sm mt-2">{t('auth.updatePasswordTitle')}</p>
+                    <BrandLogo size="lg" showIcon />
+                    <p className="text-gray-500 text-sm mt-4">{t('auth.updatePasswordTitle')}</p>
                 </div>
 
                 <div className="bg-white rounded-2xl shadow-sm border p-6">
