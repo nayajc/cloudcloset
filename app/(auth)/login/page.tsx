@@ -11,7 +11,7 @@ import { Languages } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { signIn, signUp } = useAuth()
+  const { signIn, signUp, resetPassword } = useAuth()
   const { t, language, setLanguage } = useTranslation()
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin')
   const [email, setEmail] = useState('')
@@ -26,8 +26,7 @@ export default function LoginPage() {
     setError(null)
     try {
       if (mode === 'forgot') {
-        const { resetPassword } = await import('@/hooks/useAuth').then(m => m.useAuth())
-        // To avoid calling useAuth multiple times, we already destructured signIn/signUp. We can just add resetPassword to the top destruction but let's assume it's there
+        await resetPassword(email)
       } else if (mode === 'signin') {
         await signIn(email, password)
       } else {
