@@ -1,11 +1,16 @@
 'use client'
 
-import { useWeather } from '@/hooks/useWeather'
 import { Cloud, Droplets, Thermometer } from 'lucide-react'
+import type { WeatherData } from '@/lib/types'
 
-export function WeatherWidget() {
-  const { weather, loading, error, refetch } = useWeather()
+interface Props {
+  weather: WeatherData | null
+  loading: boolean
+  error: string | null
+  refetch: () => void
+}
 
+export function WeatherWidget({ weather, loading, error, refetch }: Props) {
   if (loading) {
     return (
       <div className="rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-4 text-white animate-pulse">

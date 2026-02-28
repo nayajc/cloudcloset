@@ -47,6 +47,7 @@ export interface WeatherData {
   conditionIcon: string
   location: string
   humidity: number
+  dateStr: string // ISO date string (YYYY-MM-DD)
 }
 
 export interface ClothingAnalysis {

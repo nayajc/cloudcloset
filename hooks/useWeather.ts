@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { WeatherData } from '@/lib/types'
 
 export function useWeather() {
+  const [weatherArray, setWeatherArray] = useState<WeatherData[]>([])
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -22,9 +23,18 @@ export function useWeather() {
           const res = await fetch(
             `/api/weather?lat=${coords.latitude}&lon=${coords.longitude}`
           )
-          if (!res.ok) throw new Error('날씨 정보를 가져오지 못했습니다.')
-          const data: WeatherData = await res.json()
-          setWeather(data)
+          const data = await res.json()
+
+          if (!res.ok) {
+            throw new Error(`날씨 정보를 가져오지 못했습니다. 내역: ${data.error}`)
+          }
+
+          if (data.forecasts && data.forecasts.length > 0) {
+            setWeatherArray(data.forecasts)
+            setWeather(data.forecasts[0])
+          } else {
+            throw new Error('예보 데이터가 없습니다.')
+          }
         } catch (e) {
           setError(e instanceof Error ? e.message : '오류가 발생했습니다.')
         } finally {
@@ -42,5 +52,5 @@ export function useWeather() {
     fetchWeather()
   }, [fetchWeather])
 
-  return { weather, loading, error, refetch: fetchWeather }
+  return { weatherArray, weather, loading, error, refetch: fetchWeather }
 }

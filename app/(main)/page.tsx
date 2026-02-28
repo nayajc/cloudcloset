@@ -1,17 +1,37 @@
-'use client'
-
+import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useWardrobe } from '@/hooks/useWardrobe'
+import { useWeather } from '@/hooks/useWeather'
 import { WeatherWidget } from '@/components/weather/WeatherWidget'
 import { Button } from '@/components/ui/button'
-import { Sparkles, Shirt, Plus } from 'lucide-react'
+import { Sparkles, Shirt, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n'
 
 export default function HomePage() {
   const { user } = useAuth()
   const { items } = useWardrobe(user?.id)
-  const { t } = useTranslation()
+  const { weatherArray, loading, error, refetch } = useWeather()
+  const { t, language } = useTranslation()
+
+  const [dayOffset, setDayOffset] = useState(0)
+
+  const currentWeather = weatherArray[dayOffset] || null
+
+  const displayDate = () => {
+    if (!currentWeather) return ''
+    const d = new Date(currentWeather.dateStr)
+    const month = d.getMonth() + 1
+    const date = d.getDate()
+    const daysKo = ['일', '월', '화', '수', '목', '금', '토']
+    const daysEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const dayStr = language === 'ko' ? daysKo[d.getDay()] : daysEn[d.getDay()]
+    const baseDate = language === 'ko' ? `${month}월 ${date}일 (${dayStr})` : `${month}/${date} (${dayStr})`
+
+    if (dayOffset === 0) return baseDate + (language === 'ko' ? ' - 오늘' : ' - Today')
+    if (dayOffset === 1) return baseDate + (language === 'ko' ? ' - 내일' : ' - Tomorrow')
+    return baseDate
+  }
 
   const upwears = items.filter((i) => i.category === 'upwear')
   const downwears = items.filter((i) => i.category === 'downwear')
@@ -19,12 +39,30 @@ export default function HomePage() {
 
   return (
     <div className="space-y-6 py-2">
-      <div>
-        <h2 className="text-xl font-bold">{t('home.weatherTitle')}</h2>
-        <p className="text-sm text-gray-500 mt-0.5">{t('home.weatherDesc')}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold">{t('home.weatherTitle')}</h2>
+          <p className="text-sm font-medium text-gray-500 mt-1">{displayDate()}</p>
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setDayOffset((p) => Math.max(0, p - 1))}
+            disabled={dayOffset === 0 || weatherArray.length === 0}
+            className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-30 transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => setDayOffset((p) => Math.min(weatherArray.length - 1, p + 1))}
+            disabled={dayOffset >= weatherArray.length - 1 || weatherArray.length === 0}
+            className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-30 transition-colors"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </div>
       </div>
 
-      <WeatherWidget />
+      <WeatherWidget weather={currentWeather} loading={loading} error={error} refetch={refetch} />
 
       {/* 내 옷장 요약 */}
       <div className="rounded-2xl border bg-white p-4 space-y-3">
