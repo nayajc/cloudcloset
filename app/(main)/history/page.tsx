@@ -6,9 +6,11 @@ import { supabase } from '@/lib/supabase'
 import { OutfitCard } from '@/components/outfit/OutfitCard'
 import type { OutfitRecommendation } from '@/lib/types'
 import { Cloud } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n'
 
 export default function HistoryPage() {
   const { user } = useAuth()
+  const { t, language } = useTranslation()
   const [records, setRecords] = useState<OutfitRecommendation[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -29,7 +31,7 @@ export default function HistoryPage() {
   if (loading) {
     return (
       <div className="space-y-4 py-2">
-        <h2 className="text-xl font-bold">코디 히스토리</h2>
+        <h2 className="text-xl font-bold">{t('history.title')}</h2>
         {Array.from({ length: 2 }).map((_, i) => (
           <div key={i} className="h-48 rounded-2xl bg-gray-100 animate-pulse" />
         ))}
@@ -40,21 +42,21 @@ export default function HistoryPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-bold">코디 히스토리</h2>
-        <p className="text-sm text-gray-500 mt-0.5">지난 추천 기록을 확인해보세요</p>
+        <h2 className="text-xl font-bold">{t('history.title')}</h2>
+        <p className="text-sm text-gray-500 mt-0.5">{t('history.desc')}</p>
       </div>
 
       {records.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <Cloud className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">아직 추천 기록이 없어요</p>
+          <p className="text-sm">{t('history.empty')}</p>
         </div>
       ) : (
         records.map((record) => (
           <div key={record.id} className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-500">
-                {new Date(record.created_at).toLocaleDateString('ko-KR', {
+                {new Date(record.created_at).toLocaleDateString(language === 'ko' ? 'ko-KR' : 'en-US', {
                   month: 'long',
                   day: 'numeric',
                   weekday: 'short',

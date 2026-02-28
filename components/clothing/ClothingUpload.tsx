@@ -19,7 +19,19 @@ interface Props {
   onSave: (file: File, analysis: ClothingAnalysis) => Promise<void>
 }
 
+import { useTranslation } from '@/lib/i18n'
+
 export function ClothingUpload({ onSave }: Props) {
+  const { t, language } = useTranslation()
+
+  const SEASON_LABEL = language === 'ko'
+    ? { spring: '봄', summer: '여름', fall: '가을', winter: '겨울' }
+    : { spring: 'Spring', summer: 'Summer', fall: 'Fall', winter: 'Winter' }
+
+  const STYLE_LABEL = language === 'ko'
+    ? { casual: '캐주얼', formal: '포멀', sport: '스포츠', street: '스트릿' }
+    : { casual: 'Casual', formal: 'Formal', sport: 'Sport', street: 'Street' }
+
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -45,13 +57,13 @@ export function ClothingUpload({ onSave }: Props) {
       const res = await fetch('/api/analyze-clothing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: base64, mimeType }),
+        body: JSON.stringify({ imageBase64: base64, mimeType, language }),
       })
-      if (!res.ok) throw new Error('분석에 실패했습니다.')
+      if (!res.ok) throw new Error(t('common.error'))
       const data: ClothingAnalysis = await res.json()
       setAnalysis(data)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '오류가 발생했습니다.')
+      setError(e instanceof Error ? e.message : t('common.error'))
     } finally {
       setIsAnalyzing(false)
     }
@@ -66,7 +78,7 @@ export function ClothingUpload({ onSave }: Props) {
       setPreview(null)
       setAnalysis(null)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '저장에 실패했습니다.')
+      setError(e instanceof Error ? e.message : t('common.error'))
     } finally {
       setIsSaving(false)
     }
@@ -90,8 +102,8 @@ export function ClothingUpload({ onSave }: Props) {
         ) : (
           <div className="flex flex-col items-center gap-2 text-gray-400">
             <Upload className="w-10 h-10" />
-            <p className="text-sm">클릭하거나 사진을 끌어다 놓으세요</p>
-            <p className="text-xs">JPG, PNG, WEBP 지원</p>
+            <p className="text-sm">{t('wardrobe.uploadHint1')}</p>
+            <p className="text-xs">{t('wardrobe.uploadHint2')}</p>
           </div>
         )}
         <input
@@ -110,17 +122,17 @@ export function ClothingUpload({ onSave }: Props) {
       {file && !analysis && (
         <Button onClick={handleAnalyze} disabled={isAnalyzing} className="w-full gap-2">
           <Sparkles className="w-4 h-4" />
-          {isAnalyzing ? 'AI 분석 중...' : 'AI로 분석하기'}
+          {isAnalyzing ? t('wardrobe.analyzing') : t('wardrobe.analyzeStart')}
         </Button>
       )}
 
       {/* 분석 결과 */}
       {analysis && (
         <div className="rounded-xl border p-4 space-y-3 bg-gray-50">
-          <p className="font-semibold text-sm">분석 결과 (수정 가능)</p>
+          <p className="font-semibold text-sm">{t('wardrobe.resultTitle')}</p>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">옷 이름</label>
+            <label className="text-xs text-gray-500 mb-1 block">{t('wardrobe.labelName')}</label>
             <input
               type="text"
               value={analysis.name}
@@ -130,44 +142,44 @@ export function ClothingUpload({ onSave }: Props) {
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">위치 (예: 첫번째 서랍, 2번째 방 옷장)</label>
+            <label className="text-xs text-gray-500 mb-1 block">{t('wardrobe.labelLocation')}</label>
             <input
               type="text"
               value={analysis.location || ''}
               onChange={(e) => setAnalysis({ ...analysis, location: e.target.value })}
-              placeholder="옷이 보관된 위치를 입력하세요"
+              placeholder={language === 'ko' ? '옷이 보관된 위치를 입력하세요' : 'Enter where the clothes are stored'}
               className="w-full rounded-lg border px-3 py-2 text-sm"
             />
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">카테고리</label>
+            <label className="text-xs text-gray-500 mb-1 block">{t('wardrobe.labelCategory')}</label>
             <div className="flex gap-2">
               {(['upwear', 'downwear'] as const).map((c) => (
                 <button
                   key={c}
                   onClick={() => setAnalysis({ ...analysis, category: c })}
                   className={`px-3 py-1 rounded-full text-sm border transition-colors ${analysis.category === c
-                      ? 'bg-black text-white border-black'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
                     }`}
                 >
-                  {c === 'upwear' ? '상의' : '하의'}
+                  {c === 'upwear' ? t('wardrobe.upwear') : t('wardrobe.downwear')}
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">스타일</label>
+            <label className="text-xs text-gray-500 mb-1 block">{t('wardrobe.labelStyle')}</label>
             <div className="flex gap-2 flex-wrap">
               {STYLE_OPTIONS.map((s) => (
                 <button
                   key={s}
                   onClick={() => setAnalysis({ ...analysis, style: s })}
                   className={`px-3 py-1 rounded-full text-sm border transition-colors ${analysis.style === s
-                      ? 'bg-black text-white border-black'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
                     }`}
                 >
                   {STYLE_LABEL[s]}
@@ -177,7 +189,7 @@ export function ClothingUpload({ onSave }: Props) {
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">계절 (복수 선택)</label>
+            <label className="text-xs text-gray-500 mb-1 block">{t('wardrobe.labelSeasons')}</label>
             <div className="flex gap-2 flex-wrap">
               {SEASON_OPTIONS.map((s) => (
                 <button
@@ -189,8 +201,8 @@ export function ClothingUpload({ onSave }: Props) {
                     setAnalysis({ ...analysis, seasons })
                   }}
                   className={`px-3 py-1 rounded-full text-sm border transition-colors ${analysis.seasons.includes(s)
-                      ? 'bg-black text-white border-black'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
                     }`}
                 >
                   {SEASON_LABEL[s]}
@@ -201,7 +213,7 @@ export function ClothingUpload({ onSave }: Props) {
 
           <Button onClick={handleSave} disabled={isSaving} className="w-full gap-2 mt-2">
             <Check className="w-4 h-4" />
-            {isSaving ? '저장 중...' : '옷장에 저장하기'}
+            {isSaving ? t('common.loading') : t('wardrobe.saveWardrobe')}
           </Button>
         </div>
       )}

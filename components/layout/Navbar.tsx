@@ -2,20 +2,22 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Shirt, Sparkles, Clock, LogOut } from 'lucide-react'
+import { Home, Shirt, Sparkles, Clock, LogOut, Languages } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
-
-const NAV_ITEMS = [
-  { href: '/', label: '홈', icon: Home },
-  { href: '/wardrobe', label: '옷장', icon: Shirt },
-  { href: '/recommend', label: '추천', icon: Sparkles },
-  { href: '/history', label: '히스토리', icon: Clock },
-]
+import { useTranslation } from '@/lib/i18n'
 
 export function Navbar() {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
+  const { t, language, setLanguage } = useTranslation()
+
+  const NAV_ITEMS = [
+    { href: '/', label: t('nav.home'), icon: Home },
+    { href: '/wardrobe', label: t('nav.wardrobe'), icon: Shirt },
+    { href: '/recommend', label: t('nav.recommend'), icon: Sparkles },
+    { href: '/history', label: t('nav.history'), icon: Clock },
+  ]
 
   return (
     <>
@@ -26,15 +28,25 @@ export function Navbar() {
             <img src="/logo.png" alt="CloudCloset" className="w-6 h-6 rounded border" />
             CloudCloset
           </Link>
-          {user && (
+          <div className="flex items-center gap-4">
             <button
-              onClick={signOut}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-              title="로그아웃"
+              onClick={() => setLanguage(language === 'ko' ? 'en' : 'ko')}
+              className="text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1 text-sm font-medium"
+              title="Change Language"
             >
-              <LogOut className="w-4 h-4" />
+              <Languages className="w-4 h-4" />
+              {language === 'ko' ? 'EN' : 'KO'}
             </button>
-          )}
+            {user && (
+              <button
+                onClick={signOut}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                title={t('nav.logout')}
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
       </header>
 

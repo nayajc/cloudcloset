@@ -4,7 +4,7 @@ import type { ClothingItem, WeatherData } from '@/lib/types'
 
 export async function POST(req: NextRequest) {
   try {
-    const { weather, wardrobe }: { weather: WeatherData; wardrobe: { upwears: ClothingItem[]; downwears: ClothingItem[] } } =
+    const { weather, wardrobe, language = 'ko' }: { weather: WeatherData; wardrobe: { upwears: ClothingItem[]; downwears: ClothingItem[] }; language?: 'ko' | 'en' } =
       await req.json()
 
     if (!weather || !wardrobe) {
@@ -43,7 +43,7 @@ ${downwearList}
 1. 날씨와 기온에 적합한 조합 선택
 2. 색상 조화를 고려
 3. 스타일 일관성 유지
-4. 각 코디마다 추천 이유 1-2문장 (한국어)
+4. 각 코디마다 추천 이유 1-2문장 (${language === 'en' ? 'in English' : '한국어로'})
 5. 각 코디는 다른 아이템 조합이어야 함
 
 응답 형식:

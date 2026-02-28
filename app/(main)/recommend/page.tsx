@@ -10,11 +10,13 @@ import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 import type { OutfitCombo } from '@/lib/types'
 import { Sparkles, RefreshCw } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n'
 
 export default function RecommendPage() {
   const { user } = useAuth()
   const { items } = useWardrobe(user?.id)
   const { weather } = useWeather()
+  const { t, language } = useTranslation()
   const [outfits, setOutfits] = useState<OutfitCombo[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -31,11 +33,11 @@ export default function RecommendPage() {
       const res = await fetch('/api/recommend-outfit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weather, wardrobe: { upwears, downwears } }),
+        body: JSON.stringify({ weather, wardrobe: { upwears, downwears }, language }),
       })
       if (!res.ok) {
         const err = await res.json()
-        throw new Error(err.error ?? '추천에 실패했습니다.')
+        throw new Error(err.error ?? t('common.error'))
       }
       const { outfits: result } = await res.json()
       setOutfits(result)
@@ -49,7 +51,7 @@ export default function RecommendPage() {
         outfits: result,
       })
     } catch (e) {
-      setError(e instanceof Error ? e.message : '오류가 발생했습니다.')
+      setError(e instanceof Error ? e.message : t('common.error'))
     } finally {
       setLoading(false)
     }
@@ -58,8 +60,8 @@ export default function RecommendPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-bold">코디 추천</h2>
-        <p className="text-sm text-gray-500 mt-0.5">오늘 날씨에 맞는 코디 3가지를 추천해드려요</p>
+        <h2 className="text-xl font-bold">{t('recommend.title')}</h2>
+        <p className="text-sm text-gray-500 mt-0.5">{t('recommend.desc')}</p>
       </div>
 
       <WeatherWidget />
@@ -67,8 +69,8 @@ export default function RecommendPage() {
       {!canRecommend && (
         <div className="rounded-2xl bg-amber-50 border border-amber-100 p-4 text-sm text-amber-700">
           {!weather
-            ? '날씨 정보를 불러오는 중...'
-            : '상의와 하의를 각각 1개 이상 등록해주세요.'}
+            ? t('recommend.weatherLoading')
+            : t('recommend.reqText')}
         </div>
       )}
 
@@ -81,12 +83,12 @@ export default function RecommendPage() {
         {loading ? (
           <>
             <RefreshCw className="w-5 h-5 animate-spin" />
-            AI가 코디 추천 중...
+            {t('recommend.loading')}
           </>
         ) : (
           <>
             <Sparkles className="w-5 h-5" />
-            {outfits.length > 0 ? '다시 추천받기' : '코디 추천받기'}
+            {outfits.length > 0 ? t('recommend.buttonAgain') : t('recommend.button')}
           </>
         )}
       </Button>
@@ -97,7 +99,7 @@ export default function RecommendPage() {
 
       {outfits.length > 0 && (
         <div className="space-y-4">
-          <h3 className="font-semibold text-sm text-gray-500">추천 코디</h3>
+          <h3 className="font-semibold text-sm text-gray-500">{t('recommend.resultTitle')}</h3>
           {outfits.map((outfit) => (
             <OutfitCard key={outfit.label} outfit={outfit} />
           ))}

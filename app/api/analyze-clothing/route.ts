@@ -3,7 +3,7 @@ import { anthropic } from '@/lib/claude'
 
 export async function POST(req: NextRequest) {
   try {
-    const { imageBase64, mimeType } = await req.json()
+    const { imageBase64, mimeType, language = 'ko' } = await req.json()
 
     if (!imageBase64 || !mimeType) {
       return NextResponse.json({ error: '이미지 데이터가 필요합니다.' }, { status: 400 })
@@ -30,9 +30,9 @@ export async function POST(req: NextRequest) {
 
 응답 형식:
 {
-  "name": "옷 이름 (예: 흰 면 티셔츠, 블랙 청바지)",
+  "name": "옷 이름 (예: ${language === 'en' ? 'White Cotton T-shirt, Black Jeans' : '흰 면 티셔츠, 블랙 청바지'})",
   "category": "upwear 또는 downwear",
-  "colors": ["주요 색상을 한국어로"],
+  "colors": ["주요 색상을 ${language === 'en' ? '영어' : '한국어'}로"],
   "style": "casual / formal / sport / street 중 하나",
   "seasons": ["spring", "summer", "fall", "winter 중 해당되는 것들"]
 }`,

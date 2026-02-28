@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "내 옷장 사진 기반 날씨 연동 AI 코디 추천 앱",
 };
 
+import { LanguageProvider } from '@/lib/i18n';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

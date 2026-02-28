@@ -10,25 +10,21 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Pencil, Trash2 } from 'lucide-react'
 import type { ClothingItem } from '@/lib/types'
-
-const STYLE_LABEL: Record<string, string> = {
-  casual: '캐주얼',
-  formal: '포멀',
-  sport: '스포츠',
-  street: '스트릿',
-}
-const SEASON_LABEL: Record<string, string> = {
-  spring: '봄',
-  summer: '여름',
-  fall: '가을',
-  winter: '겨울',
-}
+import { useTranslation } from '@/lib/i18n'
 
 export default function ClothingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const { user } = useAuth()
   const { getClothing, updateClothing, removeClothing } = useWardrobe(user?.id)
+  const { t, language } = useTranslation()
+
+  const STYLE_LABEL: Record<string, string> = language === 'ko'
+    ? { casual: '캐주얼', formal: '포멀', sport: '스포츠', street: '스트릿' }
+    : { casual: 'Casual', formal: 'Formal', sport: 'Sport', street: 'Street' };
+  const SEASON_LABEL: Record<string, string> = language === 'ko'
+    ? { spring: '봄', summer: '여름', fall: '가을', winter: '겨울' }
+    : { spring: 'Spring', summer: 'Summer', fall: 'Fall', winter: 'Winter' };
 
   const [item, setItem] = useState<ClothingItem | null>(null)
   const [loading, setLoading] = useState(true)
@@ -57,7 +53,7 @@ export default function ClothingDetailPage() {
   }
 
   async function handleDelete() {
-    if (!id || !confirm('이 옷을 삭제할까요?')) return
+    if (!id || !confirm(t('common.confirmDelete'))) return
     await removeClothing(id)
     router.push('/wardrobe')
   }
@@ -75,9 +71,9 @@ export default function ClothingDetailPage() {
   if (!item) {
     return (
       <div className="text-center py-16 text-gray-400">
-        <p>옷을 찾을 수 없어요</p>
+        <p>{t('wardrobe.notFound')}</p>
         <Link href="/wardrobe" className="text-sm underline mt-2 block">
-          옷장으로 돌아가기
+          {t('wardrobe.back')}
         </Link>
       </div>
     )
@@ -108,7 +104,7 @@ export default function ClothingDetailPage() {
       {editing ? (
         /* 수정 모드 */
         <div className="rounded-xl border p-4 bg-gray-50">
-          <p className="font-semibold text-sm mb-3">정보 수정</p>
+          <p className="font-semibold text-sm mb-3">{t('wardrobe.infoEdit')}</p>
           <ClothingEditForm
             item={item}
             onSave={handleSave}
@@ -120,19 +116,19 @@ export default function ClothingDetailPage() {
         <>
           <div className="rounded-xl border p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">카테고리</span>
+              <span className="text-xs text-gray-500">{t('wardrobe.propCategory')}</span>
               <Badge variant="secondary">
-                {item.category === 'upwear' ? '상의' : '하의'}
+                {item.category === 'upwear' ? t('wardrobe.upwear') : t('wardrobe.downwear')}
               </Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">스타일</span>
+              <span className="text-xs text-gray-500">{t('wardrobe.propStyle')}</span>
               <Badge variant="outline">
                 {STYLE_LABEL[item.style] ?? item.style}
               </Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">색상</span>
+              <span className="text-xs text-gray-500">{t('wardrobe.propColor')}</span>
               <div className="flex gap-1">
                 {item.colors.map((c) => (
                   <Badge key={c} variant="outline">
@@ -143,12 +139,12 @@ export default function ClothingDetailPage() {
             </div>
             {item.location && (
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">위치</span>
+                <span className="text-xs text-gray-500">{t('wardrobe.propLocation')}</span>
                 <span className="text-sm font-medium">{item.location}</span>
               </div>
             )}
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">계절</span>
+              <span className="text-xs text-gray-500">{t('wardrobe.propSeason')}</span>
               <div className="flex gap-1">
                 {item.seasons.map((s) => (
                   <Badge key={s} variant="outline">
@@ -166,7 +162,7 @@ export default function ClothingDetailPage() {
               className="flex-1 gap-1"
             >
               <Pencil className="w-4 h-4" />
-              수정하기
+              {t('common.edit')}
             </Button>
             <Button
               onClick={handleDelete}
@@ -174,7 +170,7 @@ export default function ClothingDetailPage() {
               className="gap-1 text-red-500 hover:text-red-600 hover:bg-red-50"
             >
               <Trash2 className="w-4 h-4" />
-              삭제
+              {t('common.delete')}
             </Button>
           </div>
         </>
