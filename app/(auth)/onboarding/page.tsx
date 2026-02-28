@@ -57,6 +57,13 @@ export default function OnboardingPage() {
             })
             if (error) throw error
 
+            // Notify developer about new signup (fire-and-forget)
+            fetch('/api/notify-signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user?.email, method: 'google-oauth' }),
+            }).catch(err => console.error('[notify-signup]', err))
+
             // Force refresh session to ensure new metadata is picked up
             await supabase.auth.refreshSession()
             router.push('/')
