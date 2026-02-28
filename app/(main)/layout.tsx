@@ -10,8 +10,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const { user, loading } = useAuth()
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/login')
+    if (!loading) {
+      if (!user) {
+        router.replace('/login')
+      } else {
+        const meta = user.user_metadata
+        if (!meta?.gender || !meta?.ageGroup || !meta?.preferredStyles || meta.preferredStyles.length === 0) {
+          router.replace('/onboarding')
+        }
+      }
     }
   }, [user, loading, router])
 

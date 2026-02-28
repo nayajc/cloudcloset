@@ -10,6 +10,7 @@ import { useTranslation, Language } from '@/lib/i18n'
 import { Languages, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+// Re-using same style options from existing components
 const STYLES = [
   'style.casual', 'style.minimal', 'style.street', 'style.dandy',
   'style.classic', 'style.office', 'style.sports', 'style.vintage',
@@ -202,6 +203,19 @@ export default function LoginPage() {
                     : t('auth.signup')}
             </Button>
           </form>
+
+          {mode === 'signin' && (
+            <div className="mt-4 pt-4 border-t flex flex-col items-center">
+              <Button
+                variant="outline"
+                className="w-full flex items-center gap-2 justify-center"
+                onClick={() => useAuth().signInWithGoogle()}
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4" />
+                {t('auth.continueWithGoogle')}
+              </Button>
+            </div>
+          )}
 
           <div className="mt-4 text-center">
             <button

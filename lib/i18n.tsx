@@ -39,6 +39,10 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'auth.preferredStyles': '선호하는 스타일',
         'auth.multipleChoices': '(중복 선택 가능)',
         'auth.onboardingError': '성별, 연령대, 선호 스타일을 모두 선택해주세요.',
+        'auth.continueWithGoogle': 'Google로 계속하기',
+
+        'onboarding.title': '환영합니다! 취향을 알려주세요',
+        'onboarding.desc': 'AI가 나한테 딱 맞는 맞춤 코디를 추천해 주기 위해 필요한 정보입니다.',
 
         'style.casual': '캐주얼',
         'style.minimal': '미니멀',
@@ -152,6 +156,10 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'auth.preferredStyles': 'Preferred Styles',
         'auth.multipleChoices': '(Multiple Choices)',
         'auth.onboardingError': 'Please select your gender, age group, and preferred styles.',
+        'auth.continueWithGoogle': 'Continue with Google',
+
+        'onboarding.title': 'Welcome! Tell us about yourself',
+        'onboarding.desc': 'We need some details to personalize your AI outfit recommendations.',
 
         'style.casual': 'Casual',
         'style.minimal': 'Minimal',

@@ -71,5 +71,16 @@ export function useAuth() {
     return data
   }, [])
 
-  return { user, loading, signIn, signUp, signOut, resetPassword, updatePassword }
+  const signInWithGoogle = useCallback(async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback` // Note: standard Next.js / Supabase setup expects an auth callback route
+      }
+    })
+    if (error) throw error
+    return data
+  }, [])
+
+  return { user, loading, signIn, signUp, signOut, resetPassword, updatePassword, signInWithGoogle }
 }
