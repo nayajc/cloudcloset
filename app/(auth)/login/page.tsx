@@ -42,17 +42,16 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 flex-col relative">
-      <div className="absolute top-4 right-4">
-        <button
-          onClick={() => setLanguage(language === 'ko' ? 'en' : 'ko')}
-          className="text-gray-500 hover:text-gray-800 transition-colors flex items-center gap-1 text-sm font-medium"
-        >
-          <Languages className="w-4 h-4" />
-          {language === 'ko' ? 'EN' : 'KO'}
-        </button>
-      </div>
-
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-sm relative">
+        <div className="absolute -top-12 right-0">
+          <button
+            onClick={() => setLanguage(language === 'ko' ? 'en' : 'ko')}
+            className="text-gray-500 hover:text-gray-800 transition-colors flex items-center gap-1 text-sm font-medium"
+          >
+            <Languages className="w-4 h-4" />
+            {language === 'ko' ? 'EN' : 'KO'}
+          </button>
+        </div>
         <div className="text-center mb-8 flex flex-col items-center">
           <img src="/logo.png" alt="CloudCloset Logo" className="w-16 h-16 rounded-2xl shadow-sm mb-4 border" />
           <h1 className="text-3xl font-bold tracking-tight">CloudCloset</h1>

@@ -186,7 +186,7 @@ const dictionaries: Record<Language, Record<string, string>> = {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-    const [language, setLanguage] = useState<Language>('ko')
+    const [language, setLanguage] = useState<Language>('en')
 
     // Load preferred language from localStorage on mount
     useEffect(() => {
