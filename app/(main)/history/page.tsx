@@ -4,29 +4,36 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { OutfitCard } from '@/components/outfit/OutfitCard'
-import type { OutfitRecommendation } from '@/lib/types'
-import { Cloud } from 'lucide-react'
+import type { MyStyleOutfit } from '@/lib/types'
+import { Heart } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n'
 
 export default function HistoryPage() {
   const { user } = useAuth()
   const { t, language } = useTranslation()
-  const [records, setRecords] = useState<OutfitRecommendation[]>([])
+  const [records, setRecords] = useState<MyStyleOutfit[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const load = async () => {
     if (!user) return
-    async function load() {
-      const { data } = await supabase
-        .from('outfit_recommendations')
-        .select('*')
-        .eq('user_id', user!.id)
-        .order('created_at', { ascending: false })
-      setRecords((data as OutfitRecommendation[]) ?? [])
-      setLoading(false)
-    }
+    const { data } = await supabase
+      .from('my_style_outfits')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    setRecords((data as MyStyleOutfit[]) || [])
+    setLoading(false)
+  }
+
+  useEffect(() => {
     load()
   }, [user])
+
+  const handleRemove = () => {
+    // If an item is unliked, we reload to remove it from the list
+    load()
+  }
 
   if (loading) {
     return (
@@ -48,31 +55,33 @@ export default function HistoryPage() {
 
       {records.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
-          <Cloud className="w-12 h-12 mx-auto mb-3 opacity-30" />
+          <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p className="text-sm">{t('history.empty')}</p>
         </div>
       ) : (
-        records.map((record) => (
-          <div key={record.id} className="space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">
-                {new Date(record.created_at).toLocaleDateString(language === 'ko' ? 'ko-KR' : 'en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  weekday: 'short',
-                })}
-              </span>
-              <span className="text-gray-400">
-                {record.weather_condition} {record.weather_temp}°C · {record.weather_location}
-              </span>
+        <div className="space-y-4">
+          {records.map((record) => (
+            <div key={record.id} className="space-y-2">
+              <div className="flex items-center justify-between text-xs px-1">
+                <span className="text-gray-500">
+                  {new Date(record.created_at).toLocaleDateString(language === 'ko' ? 'ko-KR' : 'en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
+                <span className="text-gray-400">
+                  {record.weather.condition} {Math.round(record.weather.temp)}°C · {record.weather.location}
+                </span>
+              </div>
+              <OutfitCard
+                outfit={record.outfit}
+                weather={record.weather}
+                myStyleId={record.id}
+                onRemove={handleRemove}
+              />
             </div>
-            <div className="space-y-3">
-              {record.outfits.map((outfit) => (
-                <OutfitCard key={outfit.label} outfit={outfit} />
-              ))}
-            </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
     </div>
   )

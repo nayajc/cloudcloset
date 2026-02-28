@@ -100,10 +100,13 @@ ${onepieceList || '(없음)'}
         ...o,
         upwear_name: up?.name ?? '',
         upwear_image: up?.image_url ?? '',
+        upwear_location: up?.location ?? null,
         downwear_name: down?.name ?? '',
         downwear_image: down?.image_url ?? '',
+        downwear_location: down?.location ?? null,
         onepiece_name: onep?.name ?? '',
         onepiece_image: onep?.image_url ?? '',
+        onepiece_location: onep?.location ?? null,
       }
     })
 

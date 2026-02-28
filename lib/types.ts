@@ -21,13 +21,24 @@ export interface OutfitCombo {
   upwear_id?: string
   upwear_name?: string
   upwear_image?: string
+  upwear_location?: string | null
   downwear_id?: string
   downwear_name?: string
   downwear_image?: string
+  downwear_location?: string | null
   onepiece_id?: string
   onepiece_name?: string
   onepiece_image?: string
+  onepiece_location?: string | null
   reason: string
+}
+
+export interface MyStyleOutfit {
+  id: string
+  user_id: string
+  outfit: OutfitCombo
+  weather: WeatherData
+  created_at: string
 }
 
 export interface OutfitRecommendation {

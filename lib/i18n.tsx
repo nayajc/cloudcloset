@@ -35,7 +35,7 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'nav.home': '홈',
         'nav.wardrobe': '옷장',
         'nav.recommend': '추천',
-        'nav.history': '히스토리',
+        'nav.history': '내 스타일',
 
         'home.weatherTitle': '오늘의 날씨',
         'home.weatherDesc': '날씨 기반으로 코디를 추천해드려요',
@@ -90,9 +90,9 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'recommend.loading': 'AI가 코디 추천 중...',
         'recommend.resultTitle': '추천 코디',
 
-        'history.title': '추천 히스토리',
-        'history.desc': '과거에 추천받았던 코디들을 확인하세요',
-        'history.empty': '아직 추천받은 코디 내역이 없어요.',
+        'history.title': '내 스타일',
+        'history.desc': '내가 찜한 코디들을 모아보세요',
+        'history.empty': '아직 찜한 코디가 없어요.',
 
         'weather.temp': '기온',
         'weather.feelsLike': '체감',
@@ -120,7 +120,7 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'nav.home': 'Home',
         'nav.wardrobe': 'Wardrobe',
         'nav.recommend': 'Recommend',
-        'nav.history': 'History',
+        'nav.history': 'My Style',
 
         'home.weatherTitle': "Today's Weather",
         'home.weatherDesc': "Get outfit recommendations based on the weather",
@@ -175,9 +175,9 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'recommend.loading': 'AI is generating outfits...',
         'recommend.resultTitle': 'Recommended Outfits',
 
-        'history.title': 'Recommendation History',
-        'history.desc': 'Check out your past outfit recommendations',
-        'history.empty': 'No recommendation history yet.',
+        'history.title': 'My Style',
+        'history.desc': 'Check out your favorite saved outfits',
+        'history.empty': 'No favorite outfits yet.',
 
         'weather.temp': 'Temp',
         'weather.feelsLike': 'Feels Like',

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Shirt, Sparkles, Clock, LogOut, Languages } from 'lucide-react'
+import { Home, Shirt, Sparkles, Heart, LogOut, Languages } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/lib/i18n'
@@ -16,7 +16,7 @@ export function Navbar() {
     { href: '/', label: t('nav.home'), icon: Home },
     { href: '/wardrobe', label: t('nav.wardrobe'), icon: Shirt },
     { href: '/recommend', label: t('nav.recommend'), icon: Sparkles },
-    { href: '/history', label: t('nav.history'), icon: Clock },
+    { href: '/history', label: t('nav.history'), icon: Heart },
   ]
 
   return (
