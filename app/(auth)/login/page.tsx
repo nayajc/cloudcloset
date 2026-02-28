@@ -241,7 +241,7 @@ export default function LoginPage() {
                 className="w-full flex items-center gap-2 justify-center bg-[#FEE500] hover:bg-[#FEE500]/90 text-black border-none"
                 onClick={() => signInWithKakao()}
               >
-                <span className="font-semibold text-sm">카카오톡으로 로그인</span>
+                <span className="font-semibold text-sm">{t('auth.continueWithKakao')}</span>
               </Button>
             </div>
           )}
