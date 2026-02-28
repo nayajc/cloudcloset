@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useWardrobe } from '@/hooks/useWardrobe'
 import { useWeather } from '@/hooks/useWeather'
+import { useSwipe } from '@/hooks/useSwipe'
 import { WeatherWidget } from '@/components/weather/WeatherWidget'
 import { Button } from '@/components/ui/button'
 import { Sparkles, Shirt, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -17,8 +18,6 @@ export default function HomePage() {
   const { t, language } = useTranslation()
 
   const [dayOffset, setDayOffset] = useState(0)
-  const [touchStartX, setTouchStartX] = useState<number | null>(null)
-  const [touchEndX, setTouchEndX] = useState<number | null>(null)
 
   const currentWeather = weatherArray[dayOffset] || null
 
@@ -41,31 +40,10 @@ export default function HomePage() {
 
   const { date: headerDate, relative: headerRelative } = displayDate()
 
-  // Swipe handlers
-  const minSwipeDistance = 50
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEndX(null)
-    setTouchStartX(e.targetTouches[0].clientX)
-  }
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEndX(e.targetTouches[0].clientX)
-  }
-
-  const onTouchEnd = () => {
-    if (!touchStartX || !touchEndX) return
-    const distance = touchStartX - touchEndX
-    const isLeftSwipe = distance > minSwipeDistance
-    const isRightSwipe = distance < -minSwipeDistance
-
-    if (isLeftSwipe && dayOffset < weatherArray.length - 1) {
-      setDayOffset(prev => prev + 1) // next day
-    }
-    if (isRightSwipe && dayOffset > 0) {
-      setDayOffset(prev => prev - 1) // previous day
-    }
-  }
+  const swipe = useSwipe({
+    onSwipeLeft: () => { if (dayOffset < weatherArray.length - 1) setDayOffset(p => p + 1) },
+    onSwipeRight: () => { if (dayOffset > 0) setDayOffset(p => p - 1) },
+  })
 
   const upwears = items.filter((i) => i.category === 'upwear')
   const downwears = items.filter((i) => i.category === 'downwear')
@@ -99,12 +77,14 @@ export default function HomePage() {
       </div>
 
       <div
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        className="touch-pan-y"
+        onTouchStart={swipe.onTouchStart}
+        onTouchMove={swipe.onTouchMove}
+        onTouchEnd={swipe.onTouchEnd}
+        className="overflow-hidden rounded-2xl"
       >
-        <WeatherWidget weather={currentWeather} loading={loading} error={error} refetch={refetch} />
+        <div style={swipe.style}>
+          <WeatherWidget weather={currentWeather} loading={loading} error={error} refetch={refetch} />
+        </div>
       </div>
 
       {/* 내 옷장 요약 */}

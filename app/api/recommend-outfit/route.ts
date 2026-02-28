@@ -58,7 +58,8 @@ export async function POST(req: NextRequest) {
       .map((i) => `- ID: ${i.id} | ${i.name} | 색상: ${i.colors.join(', ')} | 스타일: ${i.style} | 계절: ${i.seasons.join(', ')}`)
       .join('\n')
 
-    const prompt = `당신은 패션 스타일리스트입니다. 오늘의 날씨와 사용자의 옷장을 보고 코디 3가지를 추천해주세요. JSON만 응답하세요.
+    const prompt = language === 'ko'
+      ? `당신은 패션 스타일리스트입니다. 오늘의 날씨와 사용자의 옷장을 보고 코디 3가지를 추천해주세요. JSON만 응답하세요.
 
 [오늘의 날씨]
 - 기온: ${weather.temp}°C (체감: ${weather.feelsLike}°C)
@@ -75,41 +76,54 @@ ${downwearList || '(없음)'}
 [내 옷장 - 원피스]
 ${onepieceList || '(없음)'}
 </clothes-data>
-
+${preferenceInstruction}
 Output MUST be a valid JSON matching this schema:
 {
   "outfits": [
-    {
-      "label": "A",
-      "upwear_id": "uuid or null",
-      "downwear_id": "uuid or null",
-      "onepiece_id": "uuid or null",
-      "reason": "String explaining why this is a good combination"
-    },
-    {
-      "label": "B",
-      "upwear_id": "uuid or null",
-      "downwear_id": "uuid or null",
-      "onepiece_id": "uuid or null",
-      "reason": "String explaining why this is a good combination"
-    },
-    {
-      "label": "C",
-      "upwear_id": "uuid or null",
-      "downwear_id": "uuid or null",
-      "onepiece_id": "uuid or null",
-      "reason": "String explaining why this is a good combination"
-    }
+    { "label": "A", "upwear_id": "uuid or null", "downwear_id": "uuid or null", "onepiece_id": "uuid or null", "reason": "한국어로 이 조합이 좋은 이유 설명" },
+    { "label": "B", "upwear_id": "uuid or null", "downwear_id": "uuid or null", "onepiece_id": "uuid or null", "reason": "한국어로 설명" },
+    { "label": "C", "upwear_id": "uuid or null", "downwear_id": "uuid or null", "onepiece_id": "uuid or null", "reason": "한국어로 설명" }
   ]
 }
 
-Ensure that each outfit is unique, weather appropriate, and adheres to the user preferences provided.
-${preferenceInstruction}
+각 코디는 고유해야 하고, 날씨에 적합하며, 사용자 취향을 반영해야 합니다.
 Returns exactly 3 outfits (A, B, C).
-Rules for reason field:
-- Explain WHY these specific items work well together for the current weather ${language === 'ko' ? 'in Korean. Please use polite and natural fashion styling tone (e.g. ~해서 ~하기 좋습니다.)' : 'in English'}.
-- Mention the weather condition explicitly.
-`
+reason 필드 규칙:
+- 반드시 한국어로, 왜 이 조합이 오늘 날씨에 잘 어울리는지 정중하고 자연스럽게 설명해주세요 (예: ~해서 ~하기 좋습니다).
+- 날씨 상태를 반드시 언급하세요.`
+      : `You are a fashion stylist. Based on today's weather and the user's wardrobe, recommend 3 outfit combinations. Respond with JSON only.
+
+[Today's Weather]
+- Temperature: ${weather.temp}°C (Feels like: ${weather.feelsLike}°C)
+- Condition: ${weather.condition}
+- Humidity: ${weather.humidity}%
+
+<clothes-data>
+[Wardrobe - Tops]
+${upwearList || '(none)'}
+
+[Wardrobe - Bottoms]
+${downwearList || '(none)'}
+
+[Wardrobe - One-pieces]
+${onepieceList || '(none)'}
+</clothes-data>
+${preferenceInstruction}
+Output MUST be a valid JSON matching this schema:
+{
+  "outfits": [
+    { "label": "A", "upwear_id": "uuid or null", "downwear_id": "uuid or null", "onepiece_id": "uuid or null", "reason": "Explain in English why this combination works" },
+    { "label": "B", "upwear_id": "uuid or null", "downwear_id": "uuid or null", "onepiece_id": "uuid or null", "reason": "English explanation" },
+    { "label": "C", "upwear_id": "uuid or null", "downwear_id": "uuid or null", "onepiece_id": "uuid or null", "reason": "English explanation" }
+  ]
+}
+
+Ensure each outfit is unique, weather-appropriate, and reflects the user's preferences.
+Returns exactly 3 outfits (A, B, C).
+Rules for the reason field:
+- Explain in English why these specific items work well together for the current weather.
+- Use a friendly, professional fashion styling tone.
+- Mention the weather condition explicitly.`
 
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',

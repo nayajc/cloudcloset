@@ -11,6 +11,7 @@ import { supabase } from '@/lib/supabase'
 import type { OutfitCombo } from '@/lib/types'
 import { Sparkles, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n'
+import { useSwipe } from '@/hooks/useSwipe'
 
 export default function RecommendPage() {
   const { user } = useAuth()
@@ -25,7 +26,7 @@ export default function RecommendPage() {
   const currentWeather = weatherArray[dayOffset] || null
 
   const displayDate = () => {
-    if (!currentWeather) return ''
+    if (!currentWeather) return { date: '', relative: '' }
     const d = new Date(currentWeather.dateStr)
     const month = d.getMonth() + 1
     const date = d.getDate()
@@ -34,10 +35,19 @@ export default function RecommendPage() {
     const dayStr = language === 'ko' ? daysKo[d.getDay()] : daysEn[d.getDay()]
     const baseDate = language === 'ko' ? `${month}월 ${date}일 (${dayStr})` : `${month}/${date} (${dayStr})`
 
-    if (dayOffset === 0) return baseDate + (language === 'ko' ? ' - 오늘' : ' - Today')
-    if (dayOffset === 1) return baseDate + (language === 'ko' ? ' - 내일' : ' - Tomorrow')
-    return baseDate
+    let relative = ''
+    if (dayOffset === 0) relative = language === 'ko' ? '오늘' : 'Today'
+    else if (dayOffset === 1) relative = language === 'ko' ? '내일' : 'Tomorrow'
+
+    return { date: baseDate, relative }
   }
+
+  const { date: headerDate, relative: headerRelative } = displayDate()
+
+  const swipe = useSwipe({
+    onSwipeLeft: () => { if (dayOffset < weatherArray.length - 1) setDayOffset(p => p + 1) },
+    onSwipeRight: () => { if (dayOffset > 0) setDayOffset(p => p - 1) },
+  })
 
   const upwears = items.filter((i) => i.category === 'upwear')
   const downwears = items.filter((i) => i.category === 'downwear')
@@ -84,9 +94,11 @@ export default function RecommendPage() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold">{t('recommend.title')}</h2>
-          <p className="text-sm font-medium text-gray-500 mt-1">{displayDate()}</p>
+        <div className="flex items-end gap-2">
+          <h2 className="text-2xl font-bold">{headerDate}</h2>
+          {headerRelative && (
+            <span className="text-sm font-medium text-gray-400 mb-1">{headerRelative}</span>
+          )}
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -106,7 +118,16 @@ export default function RecommendPage() {
         </div>
       </div>
 
-      <WeatherWidget weather={currentWeather} loading={weatherLoading} error={weatherError} refetch={refetch} />
+      <div
+        onTouchStart={swipe.onTouchStart}
+        onTouchMove={swipe.onTouchMove}
+        onTouchEnd={swipe.onTouchEnd}
+        className="overflow-hidden rounded-2xl"
+      >
+        <div style={swipe.style}>
+          <WeatherWidget weather={currentWeather} loading={weatherLoading} error={weatherError} refetch={refetch} />
+        </div>
+      </div>
 
       {!canRecommend && (
         <div className="rounded-2xl bg-amber-50 border border-amber-100 p-4 text-sm text-amber-700">
