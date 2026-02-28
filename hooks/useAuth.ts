@@ -32,6 +32,14 @@ export function useAuth() {
   const signUp = useCallback(async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
+
+    // 신규 가입 알림 메일 발송 (비동기로 실행하여 사용자 흐름을 막지 않음)
+    fetch('/api/notify-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(err => console.error('[notify-signup]', err))
+
     return data
   }, [])
 
