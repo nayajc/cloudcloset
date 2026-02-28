@@ -256,6 +256,12 @@ export default function LoginPage() {
             </button>
           </div>
 
+          <div className="mt-3 text-center">
+            <a href="/contact" className="text-xs text-gray-400 hover:text-gray-600">
+              {t('contact.title')} · C.Threads
+            </a>
+          </div>
+
         </div>
       </div>
     </div>

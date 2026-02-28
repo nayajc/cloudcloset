@@ -116,7 +116,7 @@ export default function TermsPage() {
                     <section>
                         <h2 className="text-lg font-semibold text-gray-900">8. Contact</h2>
                         <p>
-                            If you have any questions about these Terms or our Privacy Policy, please contact us at: <a href="mailto:support@cloudcloset.fit" className="text-blue-600 hover:underline">support@cloudcloset.fit</a>
+                            If you have any questions about these Terms or our Privacy Policy, please use our <a href="/contact" className="text-blue-600 hover:underline">contact form</a>.
                         </p>
                     </section>
                 </div>

@@ -132,6 +132,17 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'weather.temp': '기온',
         'weather.feelsLike': '체감',
         'weather.humidity': '습도',
+
+        'contact.developedBy': 'Developed by',
+        'contact.tagline': 'AI 기반 날씨 연동 맞춤 코디 추천 앱',
+        'contact.title': '문의하기',
+        'contact.name': '이름',
+        'contact.email': '이메일',
+        'contact.message': '메시지',
+        'contact.messagePlaceholder': '문의 내용을 입력해 주세요...',
+        'contact.send': '보내기',
+        'contact.sent': '메시지가 전송되었습니다!',
+        'contact.sentDesc': '보내주신 내용을 확인 후 답변드리겠습니다.',
     },
     en: {
         'brand.subtitle': 'AI Outfit Recommendations based on your wardrobe',
@@ -252,6 +263,17 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'weather.temp': 'Temp',
         'weather.feelsLike': 'Feels Like',
         'weather.humidity': 'Humidity',
+
+        'contact.developedBy': 'Developed by',
+        'contact.tagline': 'AI-powered weather-based outfit recommendations',
+        'contact.title': 'Contact Us',
+        'contact.name': 'Name',
+        'contact.email': 'Email',
+        'contact.message': 'Message',
+        'contact.messagePlaceholder': 'How can we help you?',
+        'contact.send': 'Send Message',
+        'contact.sent': 'Message sent successfully!',
+        'contact.sentDesc': 'We will review your message and get back to you.',
     }
 }
 
