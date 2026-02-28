@@ -36,6 +36,7 @@ export default function LoginPage() {
   const [gender, setGender] = useState<'auth.male' | 'auth.female' | ''>('')
   const [ageGroup, setAgeGroup] = useState('')
   const [preferredStyles, setPreferredStyles] = useState<string[]>([])
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   const toggleStyle = (style: string) => {
     setPreferredStyles(prev =>
@@ -55,6 +56,9 @@ export default function LoginPage() {
       } else {
         if (!gender || !ageGroup || preferredStyles.length === 0) {
           throw new Error(t('auth.onboardingError'))
+        }
+        if (!agreedToTerms) {
+          throw new Error(t('auth.termsRequired'))
         }
         await signUp(email, password, { gender, ageGroup, preferredStyles })
       }
@@ -183,6 +187,23 @@ export default function LoginPage() {
                   </div>
                 </div>
               </div>
+            )}
+
+            {mode === 'signup' && (
+              <label className="flex items-start gap-2 mt-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-1 accent-blue-600"
+                />
+                <span className="text-xs text-gray-500">
+                  {t('auth.agreeToTerms')}{' '}
+                  <a href="/terms" target="_blank" className="text-blue-600 hover:underline font-medium">
+                    {t('auth.termsLink')}
+                  </a>
+                </span>
+              </label>
             )}
 
             {error && (

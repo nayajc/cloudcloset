@@ -40,6 +40,9 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'auth.multipleChoices': '(중복 선택 가능)',
         'auth.onboardingError': '성별, 연령대, 선호 스타일을 모두 선택해주세요.',
         'auth.continueWithGoogle': 'Google로 계속하기',
+        'auth.agreeToTerms': '가입 시 아래 약관에 동의합니다:',
+        'auth.termsLink': '이용약관 및 개인정보 처리방침',
+        'auth.termsRequired': '이용약관에 동의해주세요.',
 
         'onboarding.title': '환영합니다! 취향을 알려주세요',
         'onboarding.desc': 'AI가 나한테 딱 맞는 맞춤 코디를 추천해 주기 위해 필요한 정보입니다.',
@@ -157,6 +160,9 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'auth.multipleChoices': '(Multiple Choices)',
         'auth.onboardingError': 'Please select your gender, age group, and preferred styles.',
         'auth.continueWithGoogle': 'Continue with Google',
+        'auth.agreeToTerms': 'I agree to the',
+        'auth.termsLink': 'Terms of Service & Privacy Policy',
+        'auth.termsRequired': 'Please agree to the Terms of Service.',
 
         'onboarding.title': 'Welcome! Tell us about yourself',
         'onboarding.desc': 'We need some details to personalize your AI outfit recommendations.',
