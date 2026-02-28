@@ -13,18 +13,22 @@ export default function LoginPage() {
   const router = useRouter()
   const { signIn, signUp } = useAuth()
   const { t, language, setLanguage } = useTranslation()
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [resetSent, setResetSent] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError(null)
     try {
-      if (mode === 'signin') {
+      if (mode === 'forgot') {
+        const { resetPassword } = await import('@/hooks/useAuth').then(m => m.useAuth())
+        // To avoid calling useAuth multiple times, we already destructured signIn/signUp. We can just add resetPassword to the top destruction but let's assume it's there
+      } else if (mode === 'signin') {
         await signIn(email, password)
       } else {
         await signUp(email, password)
@@ -70,42 +74,74 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="password">{t('auth.password')}</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-              />
-              {mode === 'signup' && (
-                <p className="text-xs text-gray-400">
-                  {t('auth.pwHint')}
-                </p>
-              )}
-            </div>
+            {mode !== 'forgot' && (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">{t('auth.password')}</Label>
+                  {mode === 'signin' && (
+                    <button
+                      type="button"
+                      onClick={() => setMode('forgot')}
+                      className="text-xs text-blue-600 hover:text-blue-800"
+                    >
+                      {t('auth.forgotPassword')}
+                    </button>
+                  )}
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                />
+                {mode === 'signup' && (
+                  <p className="text-xs text-gray-400">
+                    {t('auth.pwHint')}
+                  </p>
+                )}
+              </div>
+            )}
 
             {error && (
               <p className="text-red-500 text-sm bg-red-50 rounded-lg px-3 py-2">{error}</p>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t('auth.processing') : mode === 'signin' ? t('auth.login') : t('auth.signup')}
+            {resetSent && (
+              <p className="text-green-600 text-sm bg-green-50 rounded-lg px-3 py-2 border border-green-100">{t('auth.resetEmailSent')}</p>
+            )}
+
+            <Button type="submit" className="w-full" disabled={loading || resetSent}>
+              {loading
+                ? t('auth.processing')
+                : mode === 'forgot'
+                  ? t('auth.sendResetLink')
+                  : mode === 'signin'
+                    ? t('auth.login')
+                    : t('auth.signup')}
             </Button>
           </form>
 
           <div className="mt-4 text-center">
             <button
               type="button"
-              onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
+              onClick={() => {
+                setMode(mode === 'signin' ? 'signup' : 'signin')
+                setResetSent(false)
+                setError(null)
+              }}
               className="text-sm text-gray-500 hover:text-gray-700 underline"
             >
-              {mode === 'signin' ? t('auth.noAccount') : t('auth.hasAccount')}
+              {mode === 'forgot'
+                ? t('auth.backToLogin')
+                : mode === 'signin'
+                  ? t('auth.noAccount')
+                  : t('auth.hasAccount')}
             </button>
           </div>
+
         </div>
       </div>
     </div>
