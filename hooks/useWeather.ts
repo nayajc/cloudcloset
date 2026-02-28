@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import type { WeatherData } from '@/lib/types'
+import { useTranslation } from '@/lib/i18n'
 
 export function useWeather() {
+  const { language } = useTranslation()
   const [weatherArray, setWeatherArray] = useState<WeatherData[]>([])
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(false)
@@ -21,7 +23,7 @@ export function useWeather() {
       async ({ coords }) => {
         try {
           const res = await fetch(
-            `/api/weather?lat=${coords.latitude}&lon=${coords.longitude}`
+            `/api/weather?lat=${coords.latitude}&lon=${coords.longitude}&lang=${language}`
           )
           const data = await res.json()
 
@@ -50,7 +52,7 @@ export function useWeather() {
 
   useEffect(() => {
     fetchWeather()
-  }, [fetchWeather])
+  }, [fetchWeather, language])
 
   return { weatherArray, weather, loading, error, refetch: fetchWeather }
 }

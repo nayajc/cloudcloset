@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const lat = searchParams.get('lat')
   const lon = searchParams.get('lon')
+  const lang = searchParams.get('lang') || 'ko'
 
   if (!lat || !lon) {
     return NextResponse.json({ error: '위치 정보가 필요합니다.' }, { status: 400 })
@@ -62,7 +63,7 @@ export async function GET(req: NextRequest) {
         return {
           temp: Math.round(item.main.temp),
           feelsLike: Math.round(item.main.feels_like),
-          condition: CONDITION_MAP[mainCondition] ?? mainCondition,
+          condition: lang === 'ko' ? (CONDITION_MAP[mainCondition] ?? mainCondition) : mainCondition,
           conditionIcon: item.weather[0].icon,
           location: locationName,
           humidity: item.main.humidity,
