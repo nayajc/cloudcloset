@@ -4,16 +4,16 @@ import type { ClothingItem, WeatherData } from '@/lib/types'
 
 export async function POST(req: NextRequest) {
   try {
-    const { weather, wardrobe, language = 'ko' }: { weather: WeatherData; wardrobe: { upwears: ClothingItem[]; downwears: ClothingItem[] }; language?: 'ko' | 'en' } =
+    const { weather, wardrobe, language = 'ko' }: { weather: WeatherData; wardrobe: { upwears: ClothingItem[]; downwears: ClothingItem[], onepieces: ClothingItem[] }; language?: 'ko' | 'en' } =
       await req.json()
 
     if (!weather || !wardrobe) {
       return NextResponse.json({ error: '날씨와 옷장 정보가 필요합니다.' }, { status: 400 })
     }
 
-    if (wardrobe.upwears.length === 0 || wardrobe.downwears.length === 0) {
+    if ((wardrobe.upwears.length === 0 || wardrobe.downwears.length === 0) && wardrobe.onepieces.length === 0) {
       return NextResponse.json(
-        { error: '상의와 하의가 각각 1개 이상 필요합니다.' },
+        { error: '상의 1개+하의 1개, 또는 원피스 1개 이상이 필요합니다.' },
         { status: 400 }
       )
     }
@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
       .map((i) => `- ID: ${i.id} | ${i.name} | 색상: ${i.colors.join(', ')} | 스타일: ${i.style} | 계절: ${i.seasons.join(', ')}`)
       .join('\n')
 
+    const onepieceList = wardrobe.onepieces
+      .map((i) => `- ID: ${i.id} | ${i.name} | 색상: ${i.colors.join(', ')} | 스타일: ${i.style} | 계절: ${i.seasons.join(', ')}`)
+      .join('\n')
+
     const prompt = `당신은 패션 스타일리스트입니다. 오늘의 날씨와 사용자의 옷장을 보고 코디 3가지를 추천해주세요. JSON만 응답하세요.
 
 [오늘의 날씨]
@@ -34,37 +38,44 @@ export async function POST(req: NextRequest) {
 - 습도: ${weather.humidity}%
 
 [내 옷장 - 상의]
-${upwearList}
+${upwearList || '(없음)'}
 
 [내 옷장 - 하의]
-${downwearList}
+${downwearList || '(없음)'}
+
+[내 옷장 - 원피스]
+${onepieceList || '(없음)'}
 
 규칙:
 1. 날씨와 기온에 적합한 조합 선택
 2. 색상 조화를 고려
 3. 스타일 일관성 유지
 4. 각 코디마다 추천 이유 1-2문장 (${language === 'en' ? 'in English' : '한국어로'})
-5. 각 코디는 다른 아이템 조합이어야 함
+5. "상의 1개 + 하의 1개" 조합이거나 "원피스 1개" 단독 조합이어야 함.
+6. 각 코디는 다른 아이템 조합이어야 함
 
 응답 형식:
 {
   "outfits": [
     {
       "label": "A",
-      "upwear_id": "실제 ID",
-      "downwear_id": "실제 ID",
+      "upwear_id": "실제 ID (원피스 코디인 경우 null)",
+      "downwear_id": "실제 ID (원피스 코디인 경우 null)",
+      "onepiece_id": "실제 ID (상하의 코디인 경우 null)",
       "reason": "추천 이유"
     },
     {
       "label": "B",
-      "upwear_id": "실제 ID",
-      "downwear_id": "실제 ID",
+      "upwear_id": "...",
+      "downwear_id": "...",
+      "onepiece_id": "...",
       "reason": "추천 이유"
     },
     {
       "label": "C",
-      "upwear_id": "실제 ID",
-      "downwear_id": "실제 ID",
+      "upwear_id": "...",
+      "downwear_id": "...",
+      "onepiece_id": "...",
       "reason": "추천 이유"
     }
   ]
@@ -80,16 +91,19 @@ ${downwearList}
     const cleaned = text.replace(/```json\n?|\n?```/g, '').trim()
     const { outfits } = JSON.parse(cleaned)
 
-    // upwear/downwear 이름과 이미지를 추천 결과에 포함
-    const enriched = outfits.map((o: { label: string; upwear_id: string; downwear_id: string; reason: string }) => {
+    // upwear/downwear/onepiece 이름과 이미지를 추천 결과에 포함
+    const enriched = outfits.map((o: { label: string; upwear_id?: string; downwear_id?: string; onepiece_id?: string; reason: string }) => {
       const up = wardrobe.upwears.find((i) => i.id === o.upwear_id)
       const down = wardrobe.downwears.find((i) => i.id === o.downwear_id)
+      const onep = wardrobe.onepieces.find((i) => i.id === o.onepiece_id)
       return {
         ...o,
         upwear_name: up?.name ?? '',
         upwear_image: up?.image_url ?? '',
         downwear_name: down?.name ?? '',
         downwear_image: down?.image_url ?? '',
+        onepiece_name: onep?.name ?? '',
+        onepiece_image: onep?.image_url ?? '',
       }
     })
 

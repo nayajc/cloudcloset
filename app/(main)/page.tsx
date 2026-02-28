@@ -15,6 +15,7 @@ export default function HomePage() {
 
   const upwears = items.filter((i) => i.category === 'upwear')
   const downwears = items.filter((i) => i.category === 'downwear')
+  const onepieces = items.filter((i) => i.category === 'onepiece')
 
   return (
     <div className="space-y-6 py-2">
@@ -35,7 +36,7 @@ export default function HomePage() {
             <Plus className="w-3 h-3" /> {t('common.add')}
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-3 text-center">
+        <div className="grid grid-cols-3 gap-3 text-center">
           <div className="bg-gray-50 rounded-xl py-3">
             <p className="text-2xl font-bold">{upwears.length}</p>
             <p className="text-xs text-gray-500 mt-0.5">{t('wardrobe.upwear')}</p>
@@ -44,11 +45,15 @@ export default function HomePage() {
             <p className="text-2xl font-bold">{downwears.length}</p>
             <p className="text-xs text-gray-500 mt-0.5">{t('wardrobe.downwear')}</p>
           </div>
+          <div className="bg-gray-50 rounded-xl py-3">
+            <p className="text-2xl font-bold">{onepieces.length}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t('wardrobe.onepiece')}</p>
+          </div>
         </div>
       </div>
 
       {/* 추천 CTA */}
-      {upwears.length > 0 && downwears.length > 0 ? (
+      {(upwears.length > 0 && downwears.length > 0) || onepieces.length > 0 ? (
         <Link href="/recommend">
           <Button size="lg" className="w-full gap-2 h-14 text-base rounded-2xl">
             <Sparkles className="w-5 h-5" />

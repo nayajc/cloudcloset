@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 응답 형식:
 {
   "name": "옷 이름 (예: ${language === 'en' ? 'White Cotton T-shirt, Black Jeans' : '흰 면 티셔츠, 블랙 청바지'})",
-  "category": "upwear 또는 downwear",
+  "category": "upwear, downwear 또는 onepiece 중 하나",
   "colors": ["주요 색상을 ${language === 'en' ? '영어' : '한국어'}로"],
   "style": "casual / formal / sport / street 중 하나",
   "seasons": ["spring", "summer", "fall", "winter 중 해당되는 것들"]

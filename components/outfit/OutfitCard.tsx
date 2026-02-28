@@ -19,43 +19,63 @@ export function OutfitCard({ outfit }: Props) {
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 p-4">
-        <div className="space-y-2">
-          <p className="text-xs text-gray-400 font-medium">상의</p>
-          <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-            {outfit.upwear_image ? (
-              <img
-                src={outfit.upwear_image}
-                alt={outfit.upwear_name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">
-                이미지 없음
-              </div>
-            )}
+      {outfit.onepiece_id ? (
+        <div className="p-4">
+          <div className="space-y-2">
+            <p className="text-xs text-gray-400 font-medium">원피스</p>
+            <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+              {outfit.onepiece_image ? (
+                <img
+                  src={outfit.onepiece_image}
+                  alt={outfit.onepiece_name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-gray-300 text-xs">이미지 없음</span>
+              )}
+            </div>
+            <p className="text-sm font-medium truncate">{outfit.onepiece_name}</p>
           </div>
-          <p className="text-sm font-medium truncate">{outfit.upwear_name}</p>
         </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 p-4">
+          <div className="space-y-2">
+            <p className="text-xs text-gray-400 font-medium">상의</p>
+            <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
+              {outfit.upwear_image ? (
+                <img
+                  src={outfit.upwear_image}
+                  alt={outfit.upwear_name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">
+                  이미지 없음
+                </div>
+              )}
+            </div>
+            <p className="text-sm font-medium truncate">{outfit.upwear_name}</p>
+          </div>
 
-        <div className="space-y-2">
-          <p className="text-xs text-gray-400 font-medium">하의</p>
-          <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-            {outfit.downwear_image ? (
-              <img
-                src={outfit.downwear_image}
-                alt={outfit.downwear_name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">
-                이미지 없음
-              </div>
-            )}
+          <div className="space-y-2">
+            <p className="text-xs text-gray-400 font-medium">하의</p>
+            <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
+              {outfit.downwear_image ? (
+                <img
+                  src={outfit.downwear_image}
+                  alt={outfit.downwear_name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">
+                  이미지 없음
+                </div>
+              )}
+            </div>
+            <p className="text-sm font-medium truncate">{outfit.downwear_name}</p>
           </div>
-          <p className="text-sm font-medium truncate">{outfit.downwear_name}</p>
         </div>
-      </div>
+      )}
 
       <div className="px-4 pb-4">
         <p className="text-sm text-gray-600 bg-gray-50 rounded-xl p-3 leading-relaxed">

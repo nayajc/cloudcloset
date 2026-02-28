@@ -32,7 +32,7 @@ export function ClothingCard({ item, onRemove }: Props) {
           <p className="font-medium text-sm truncate">{item.name}</p>
           <div className="flex flex-wrap gap-1 mt-2">
             <Badge variant="secondary" className="text-xs">
-              {item.category === 'upwear' ? '상의' : '하의'}
+              {item.category === 'upwear' ? '상의' : item.category === 'downwear' ? '하의' : '원피스'}
             </Badge>
             <Badge variant="outline" className="text-xs">
               {STYLE_LABEL[item.style] ?? item.style}

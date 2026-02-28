@@ -118,7 +118,7 @@ export default function ClothingDetailPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500">{t('wardrobe.propCategory')}</span>
               <Badge variant="secondary">
-                {item.category === 'upwear' ? t('wardrobe.upwear') : t('wardrobe.downwear')}
+                {item.category === 'upwear' ? t('wardrobe.upwear') : item.category === 'downwear' ? t('wardrobe.downwear') : t('wardrobe.onepiece')}
               </Badge>
             </div>
             <div className="flex items-center justify-between">

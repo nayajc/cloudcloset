@@ -23,7 +23,8 @@ export default function RecommendPage() {
 
   const upwears = items.filter((i) => i.category === 'upwear')
   const downwears = items.filter((i) => i.category === 'downwear')
-  const canRecommend = upwears.length > 0 && downwears.length > 0 && !!weather
+  const onepieces = items.filter((i) => i.category === 'onepiece')
+  const canRecommend = ((upwears.length > 0 && downwears.length > 0) || onepieces.length > 0) && !!weather
 
   async function handleRecommend() {
     if (!weather || !user) return
@@ -33,7 +34,7 @@ export default function RecommendPage() {
       const res = await fetch('/api/recommend-outfit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weather, wardrobe: { upwears, downwears }, language }),
+        body: JSON.stringify({ weather, wardrobe: { upwears, downwears, onepieces }, language }),
       })
       if (!res.ok) {
         const err = await res.json()

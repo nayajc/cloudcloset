@@ -4,6 +4,7 @@ const CATEGORIES = [
   { value: null, label: '전체' },
   { value: 'upwear', label: '상의' },
   { value: 'downwear', label: '하의' },
+  { value: 'onepiece', label: '원피스' },
 ] as const
 
 const STYLES = [
@@ -37,11 +38,10 @@ export function ClothingFilter({
           <button
             key={c.label}
             onClick={() => onCategoryChange(c.value)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              category === c.value
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${category === c.value
                 ? 'bg-black text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+              }`}
           >
             {c.label}
           </button>
@@ -57,11 +57,10 @@ export function ClothingFilter({
           <button
             key={s.label}
             onClick={() => onStyleChange(s.value)}
-            className={`px-3 py-1 rounded-full text-xs transition-colors border ${
-              style === s.value
+            className={`px-3 py-1 rounded-full text-xs transition-colors border ${style === s.value
                 ? 'bg-gray-900 text-white border-gray-900'
                 : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
-            }`}
+              }`}
           >
             {s.label}
           </button>

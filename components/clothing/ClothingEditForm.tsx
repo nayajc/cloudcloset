@@ -78,7 +78,7 @@ export function ClothingEditForm({ item, onSave, onCancel }: Props) {
       <div>
         <label className="text-xs text-gray-500 mb-1 block">{t('wardrobe.labelCategory')}</label>
         <div className="flex gap-2">
-          {(['upwear', 'downwear'] as const).map((c) => (
+          {(['upwear', 'downwear', 'onepiece'] as const).map((c) => (
             <button
               key={c}
               onClick={() => setCategory(c)}
@@ -87,7 +87,7 @@ export function ClothingEditForm({ item, onSave, onCancel }: Props) {
                 : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
                 }`}
             >
-              {c === 'upwear' ? t('wardrobe.upwear') : t('wardrobe.downwear')}
+              {c === 'upwear' ? t('wardrobe.upwear') : c === 'downwear' ? t('wardrobe.downwear') : t('wardrobe.onepiece')}
             </button>
           ))}
         </div>

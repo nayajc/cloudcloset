@@ -1,4 +1,4 @@
-export type ClothingCategory = 'upwear' | 'downwear'
+export type ClothingCategory = 'upwear' | 'downwear' | 'onepiece'
 export type ClothingStyle = 'casual' | 'formal' | 'sport' | 'street'
 export type Season = 'spring' | 'summer' | 'fall' | 'winter'
 
@@ -18,12 +18,15 @@ export interface ClothingItem {
 
 export interface OutfitCombo {
   label: 'A' | 'B' | 'C'
-  upwear_id: string
-  upwear_name: string
-  upwear_image: string
-  downwear_id: string
-  downwear_name: string
-  downwear_image: string
+  upwear_id?: string
+  upwear_name?: string
+  upwear_image?: string
+  downwear_id?: string
+  downwear_name?: string
+  downwear_image?: string
+  onepiece_id?: string
+  onepiece_name?: string
+  onepiece_image?: string
   reason: string
 }
 
