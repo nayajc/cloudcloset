@@ -59,8 +59,11 @@ export function ClothingUpload({ onSave }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageBase64: base64, mimeType, language }),
       })
-      if (!res.ok) throw new Error(t('common.error'))
-      const data: ClothingAnalysis = await res.json()
+      const data = await res.json().catch(() => null)
+
+      if (!res.ok) {
+        throw new Error(data?.error || t('common.error'))
+      }
       setAnalysis(data)
     } catch (e) {
       setError(e instanceof Error ? e.message : t('common.error'))

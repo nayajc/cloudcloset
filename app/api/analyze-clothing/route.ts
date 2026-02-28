@@ -43,12 +43,19 @@ export async function POST(req: NextRequest) {
     })
 
     const text = response.content[0].type === 'text' ? response.content[0].text : ''
-    const cleaned = text.replace(/```json\n?|\n?```/g, '').trim()
-    const result = JSON.parse(cleaned)
+
+    // JSON 문자열만 안전하게 추출 (Claude가 앞뒤에 부가 설명을 붙이는 경우 대비)
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      throw new Error('AI 응답에서 JSON 형식을 찾을 수 없습니다.')
+    }
+
+    const result = JSON.parse(jsonMatch[0])
 
     return NextResponse.json(result)
   } catch (error) {
     console.error('[analyze-clothing]', error)
-    return NextResponse.json({ error: '옷 분석 중 오류가 발생했습니다.' }, { status: 500 })
+    const message = error instanceof Error ? error.message : '옷 분석 중 오류가 발생했습니다.'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
