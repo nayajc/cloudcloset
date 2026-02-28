@@ -2,31 +2,59 @@ import { NextRequest, NextResponse } from 'next/server'
 import { anthropic } from '@/lib/claude'
 import type { ClothingItem, WeatherData } from '@/lib/types'
 
+// Define types for preferences
+interface UserPreferences {
+  gender?: 'male' | 'female' | 'unisex';
+  ageGroup?: 'teenager' | '20s' | '30s' | '40s' | '50s+' | 'all';
+  preferredStyles?: string[];
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { weather, wardrobe, language = 'ko' }: { weather: WeatherData; wardrobe: { upwears: ClothingItem[]; downwears: ClothingItem[], onepieces: ClothingItem[] }; language?: 'ko' | 'en' } =
-      await req.json()
+    const body: {
+      weather: WeatherData;
+      wardrobe: { upwears: ClothingItem[]; downwears: ClothingItem[], onepieces: ClothingItem[] };
+      preferences?: UserPreferences;
+      language?: 'ko' | 'en';
+    } = await req.json();
+
+    const { weather, wardrobe, preferences, language = 'ko' } = body;
+
+    // Build the preference string
+    let preferenceInstruction = '';
+    if (preferences && (preferences.gender || preferences.ageGroup || (preferences.preferredStyles && preferences.preferredStyles.length > 0))) {
+      preferenceInstruction = `\n\n=== USER PREFERENCES ===\n`;
+      if (preferences.gender) preferenceInstruction += `- Gender: ${preferences.gender}\n`;
+      if (preferences.ageGroup) preferenceInstruction += `- Age Group: ${preferences.ageGroup}\n`;
+      if (preferences.preferredStyles && preferences.preferredStyles.length > 0) {
+        preferenceInstruction += `- Preferred Styles: ${preferences.preferredStyles.join(', ')}\n`;
+      }
+      preferenceInstruction += `IMPORTANT: When recommending outfits, strongly consider these user preferences. The generated style, tone, and rationale should distinctly reflect their gender, age group, and favored styles.\n`;
+    }
 
     if (!weather || !wardrobe) {
       return NextResponse.json({ error: '날씨와 옷장 정보가 필요합니다.' }, { status: 400 })
     }
 
-    if ((wardrobe.upwears.length === 0 || wardrobe.downwears.length === 0) && wardrobe.onepieces.length === 0) {
+    // Ensure wardrobe items are arrays, defaulting to empty if undefined
+    const { upwears = [], downwears = [], onepieces = [] } = wardrobe;
+
+    if ((upwears.length === 0 || downwears.length === 0) && onepieces.length === 0) {
       return NextResponse.json(
         { error: '상의 1개+하의 1개, 또는 원피스 1개 이상이 필요합니다.' },
         { status: 400 }
       )
     }
 
-    const upwearList = wardrobe.upwears
+    const upwearList = upwears
       .map((i) => `- ID: ${i.id} | ${i.name} | 색상: ${i.colors.join(', ')} | 스타일: ${i.style} | 계절: ${i.seasons.join(', ')}`)
       .join('\n')
 
-    const downwearList = wardrobe.downwears
+    const downwearList = downwears
       .map((i) => `- ID: ${i.id} | ${i.name} | 색상: ${i.colors.join(', ')} | 스타일: ${i.style} | 계절: ${i.seasons.join(', ')}`)
       .join('\n')
 
-    const onepieceList = wardrobe.onepieces
+    const onepieceList = onepieces
       .map((i) => `- ID: ${i.id} | ${i.name} | 색상: ${i.colors.join(', ')} | 스타일: ${i.style} | 계절: ${i.seasons.join(', ')}`)
       .join('\n')
 
@@ -37,6 +65,7 @@ export async function POST(req: NextRequest) {
 - 날씨: ${weather.condition}
 - 습도: ${weather.humidity}%
 
+<clothes-data>
 [내 옷장 - 상의]
 ${upwearList || '(없음)'}
 
@@ -45,41 +74,42 @@ ${downwearList || '(없음)'}
 
 [내 옷장 - 원피스]
 ${onepieceList || '(없음)'}
+</clothes-data>
 
-규칙:
-1. 날씨와 기온에 적합한 조합 선택
-2. 색상 조화를 고려
-3. 스타일 일관성 유지
-4. 각 코디마다 추천 이유 1-2문장 (${language === 'en' ? 'in English' : '한국어로'})
-5. "상의 1개 + 하의 1개" 조합이거나 "원피스 1개" 단독 조합이어야 함.
-6. 각 코디는 다른 아이템 조합이어야 함
-
-응답 형식:
+Output MUST be a valid JSON matching this schema:
 {
   "outfits": [
     {
       "label": "A",
-      "upwear_id": "실제 ID (원피스 코디인 경우 null)",
-      "downwear_id": "실제 ID (원피스 코디인 경우 null)",
-      "onepiece_id": "실제 ID (상하의 코디인 경우 null)",
-      "reason": "추천 이유"
+      "upwear_id": "uuid or null",
+      "downwear_id": "uuid or null",
+      "onepiece_id": "uuid or null",
+      "reason": "String explaining why this is a good combination"
     },
     {
       "label": "B",
-      "upwear_id": "...",
-      "downwear_id": "...",
-      "onepiece_id": "...",
-      "reason": "추천 이유"
+      "upwear_id": "uuid or null",
+      "downwear_id": "uuid or null",
+      "onepiece_id": "uuid or null",
+      "reason": "String explaining why this is a good combination"
     },
     {
       "label": "C",
-      "upwear_id": "...",
-      "downwear_id": "...",
-      "onepiece_id": "...",
-      "reason": "추천 이유"
+      "upwear_id": "uuid or null",
+      "downwear_id": "uuid or null",
+      "onepiece_id": "uuid or null",
+      "reason": "String explaining why this is a good combination"
     }
   ]
-}`
+}
+
+Ensure that each outfit is unique, weather appropriate, and adheres to the user preferences provided.
+${preferenceInstruction}
+Returns exactly 3 outfits (A, B, C).
+Rules for reason field:
+- Explain WHY these specific items work well together for the current weather ${language === 'ko' ? 'in Korean. Please use polite and natural fashion styling tone (e.g. ~해서 ~하기 좋습니다.)' : 'in English'}.
+- Mention the weather condition explicitly.
+`
 
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',
@@ -91,7 +121,6 @@ ${onepieceList || '(없음)'}
     const cleaned = text.replace(/```json\n?|\n?```/g, '').trim()
     const { outfits } = JSON.parse(cleaned)
 
-    // upwear/downwear/onepiece 이름과 이미지를 추천 결과에 포함
     const enriched = outfits.map((o: { label: string; upwear_id?: string; downwear_id?: string; onepiece_id?: string; reason: string }) => {
       const up = wardrobe.upwears.find((i) => i.id === o.upwear_id)
       const down = wardrobe.downwears.find((i) => i.id === o.downwear_id)

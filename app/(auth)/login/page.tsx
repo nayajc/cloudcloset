@@ -7,7 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useTranslation, Language } from '@/lib/i18n'
-import { Languages } from 'lucide-react'
+import { Languages, Check } from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+const STYLES = ['캐주얼', '미니멀', '스트릿', '댄디', '클래식', '오피스룩', '스포츠 / 애슬레저', '빈티지', '힙합', '모던', '러블리', '하이엔드']
+const AGE_GROUPS = ['10-20대', '20-30대', '30-40대', '40-50대', '50-60대', '60대 이상']
 
 export default function LoginPage() {
   const router = useRouter()
@@ -20,6 +24,17 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [resetSent, setResetSent] = useState(false)
 
+  // Onboarding Data
+  const [gender, setGender] = useState<'남성' | '여성' | ''>('')
+  const [ageGroup, setAgeGroup] = useState('')
+  const [preferredStyles, setPreferredStyles] = useState<string[]>([])
+
+  const toggleStyle = (style: string) => {
+    setPreferredStyles(prev =>
+      prev.includes(style) ? prev.filter(s => s !== style) : [...prev, style]
+    )
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -30,7 +45,10 @@ export default function LoginPage() {
       } else if (mode === 'signin') {
         await signIn(email, password)
       } else {
-        await signUp(email, password)
+        if (!gender || !ageGroup || preferredStyles.length === 0) {
+          throw new Error('성별, 연령대, 선호 스타일을 모두 선택해주세요.')
+        }
+        await signUp(email, password, { gender, ageGroup, preferredStyles })
       }
       router.push('/')
     } catch (e) {
@@ -100,6 +118,62 @@ export default function LoginPage() {
                     {t('auth.pwHint')}
                   </p>
                 )}
+              </div>
+            )}
+
+            {mode === 'signup' && (
+              <div className="space-y-5 pt-4 border-t mt-4">
+                <div className="space-y-2">
+                  <Label>성별</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {['남성', '여성'].map(g => (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => setGender(g as '남성' | '여성')}
+                        className={cn("p-2 text-sm border rounded-xl flex items-center justify-center transition-colors", gender === g ? "border-blue-500 bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50")}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>연령대</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {AGE_GROUPS.map(age => (
+                      <button
+                        key={age}
+                        type="button"
+                        onClick={() => setAgeGroup(age)}
+                        className={cn("p-2 text-xs border rounded-xl flex items-center justify-center transition-colors", ageGroup === age ? "border-blue-500 bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50")}
+                      >
+                        {age}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>선호하는 스타일 <span className="text-xs font-normal text-gray-400">(중복 선택 가능)</span></Label>
+                  <div className="flex flex-wrap gap-2">
+                    {STYLES.map(style => {
+                      const selected = preferredStyles.includes(style)
+                      return (
+                        <button
+                          key={style}
+                          type="button"
+                          onClick={() => toggleStyle(style)}
+                          className={cn("px-3 py-1.5 text-xs border rounded-full flex items-center gap-1 transition-all", selected ? "border-blue-500 bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50 text-gray-600")}
+                        >
+                          {selected && <Check className="w-3 h-3" />}
+                          {style}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
               </div>
             )}
 

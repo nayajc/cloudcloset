@@ -52,7 +52,12 @@ export default function RecommendPage() {
       const res = await fetch('/api/recommend-outfit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weather: currentWeather, wardrobe: { upwears, downwears, onepieces }, language }),
+        body: JSON.stringify({
+          weather: currentWeather,
+          wardrobe: { upwears, downwears, onepieces },
+          preferences: user.user_metadata,
+          language
+        }),
       })
       if (!res.ok) {
         const err = await res.json()
