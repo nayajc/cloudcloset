@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,6 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 const BASE_URL = "https://cloudcloset.fit";
+
+export const viewport: Viewport = {
+  themeColor: "#0ea5e9",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -38,7 +42,6 @@ export const metadata: Metadata = {
     canonical: BASE_URL,
   },
   manifest: "/manifest.json",
-  themeColor: "#0ea5e9",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

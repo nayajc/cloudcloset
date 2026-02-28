@@ -53,7 +53,7 @@ export default function HomePage() {
     <div className="space-y-6 py-2">
       <div className="flex items-center justify-between">
         <div className="flex items-end gap-2">
-          <h2 className="text-2xl font-bold">{headerDate}</h2>
+          <h1 className="text-2xl font-bold">{headerDate}</h1>
           {headerRelative && (
             <span className="text-sm font-medium text-gray-400 mb-1">{headerRelative}</span>
           )}

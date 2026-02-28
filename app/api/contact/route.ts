@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy')
 
 // The recipient email is kept server-side only - never exposed to the client
 const ADMIN_EMAIL = 'nayajcsong@gmail.com'

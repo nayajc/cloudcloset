@@ -58,10 +58,10 @@ export default function ContactPage() {
 
                 {/* Contact Form */}
                 <div className="bg-white rounded-2xl shadow-sm border p-6">
-                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <h1 className="font-semibold mb-4 flex items-center gap-2 text-lg">
                         <Send className="w-4 h-4" />
                         {t('contact.title')}
-                    </h3>
+                    </h1>
 
                     {sent ? (
                         <div className="text-center py-8 space-y-3">

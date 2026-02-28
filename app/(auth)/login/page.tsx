@@ -24,7 +24,7 @@ const AGE_GROUPS = [
 
 export default function LoginPage() {
   const router = useRouter()
-  const { signIn, signUp, resetPassword, signInWithGoogle } = useAuth()
+  const { signIn, signUp, resetPassword, signInWithGoogle, signInWithKakao } = useAuth()
   const { t, language, setLanguage } = useTranslation()
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin')
   const [email, setEmail] = useState('')
@@ -84,6 +84,7 @@ export default function LoginPage() {
           </button>
         </div>
         <div className="text-center mb-8 flex flex-col items-center">
+          <h1 className="sr-only">Login to CloudCloset - AI Outfit Recommendations</h1>
           <BrandLogo size="lg" showIcon />
           <p className="text-gray-500 text-sm mt-4">{t('brand.subtitle')}</p>
         </div>
@@ -226,7 +227,7 @@ export default function LoginPage() {
           </form>
 
           {mode === 'signin' && (
-            <div className="mt-4 pt-4 border-t flex flex-col items-center">
+            <div className="mt-4 pt-4 border-t flex flex-col items-center gap-2">
               <Button
                 variant="outline"
                 className="w-full flex items-center gap-2 justify-center"
@@ -234,6 +235,13 @@ export default function LoginPage() {
               >
                 <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4" />
                 {t('auth.continueWithGoogle')}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full flex items-center gap-2 justify-center bg-[#FEE500] hover:bg-[#FEE500]/90 text-black border-none"
+                onClick={() => signInWithKakao()}
+              >
+                <span className="font-semibold text-sm">카카오톡으로 로그인</span>
               </Button>
             </div>
           )}
