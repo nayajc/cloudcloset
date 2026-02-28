@@ -138,7 +138,11 @@ export default function RecommendPage() {
         <div className="space-y-4">
           <h3 className="font-semibold text-sm text-gray-500">{t('recommend.resultTitle')}</h3>
           {outfits.map((outfit) => (
-            <OutfitCard key={outfit.label} outfit={outfit} />
+            <OutfitCard
+              key={outfit.label}
+              outfit={outfit}
+              weather={currentWeather}
+            />
           ))}
         </div>
       )}
