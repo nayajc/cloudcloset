@@ -4,7 +4,7 @@ import { useWeather } from '@/hooks/useWeather'
 import { Cloud, Droplets, Thermometer } from 'lucide-react'
 
 export function WeatherWidget() {
-  const { weather, loading, error } = useWeather()
+  const { weather, loading, error, refetch } = useWeather()
 
   if (loading) {
     return (
@@ -17,8 +17,11 @@ export function WeatherWidget() {
 
   if (error || !weather) {
     return (
-      <div className="rounded-2xl bg-gray-100 p-4 text-gray-500 text-sm">
-        {error ?? '날씨 정보를 불러오는 중...'}
+      <div
+        onClick={() => refetch()}
+        className="rounded-2xl bg-gray-100 p-4 text-gray-500 text-sm cursor-pointer hover:bg-gray-200 transition-colors"
+      >
+        {error ?? '날씨 정보를 불러오는 중... (다시 시도하려면 클릭)'}
       </div>
     )
   }

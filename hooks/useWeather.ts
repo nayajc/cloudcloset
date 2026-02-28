@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { WeatherData } from '@/lib/types'
 
 export function useWeather() {
@@ -8,13 +8,14 @@ export function useWeather() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const fetchWeather = useCallback(() => {
     if (!navigator.geolocation) {
       setError('위치 정보를 사용할 수 없습니다.')
       return
     }
 
     setLoading(true)
+    setError(null)
     navigator.geolocation.getCurrentPosition(
       async ({ coords }) => {
         try {
@@ -31,11 +32,15 @@ export function useWeather() {
         }
       },
       () => {
-        setError('위치 권한이 거부되었습니다.')
+        setError('위치 권한이 거부되었습니다. 여길 클릭하여 다시 시도하거나, 브라우저 설정에서 권한을 허용해주세요.')
         setLoading(false)
       }
     )
   }, [])
 
-  return { weather, loading, error }
+  useEffect(() => {
+    fetchWeather()
+  }, [fetchWeather])
+
+  return { weather, loading, error, refetch: fetchWeather }
 }
