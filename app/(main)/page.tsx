@@ -17,11 +17,13 @@ export default function HomePage() {
   const { t, language } = useTranslation()
 
   const [dayOffset, setDayOffset] = useState(0)
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [touchEndX, setTouchEndX] = useState<number | null>(null)
 
   const currentWeather = weatherArray[dayOffset] || null
 
   const displayDate = () => {
-    if (!currentWeather) return ''
+    if (!currentWeather) return { date: '', relative: '' }
     const d = new Date(currentWeather.dateStr)
     const month = d.getMonth() + 1
     const date = d.getDate()
@@ -30,9 +32,39 @@ export default function HomePage() {
     const dayStr = language === 'ko' ? daysKo[d.getDay()] : daysEn[d.getDay()]
     const baseDate = language === 'ko' ? `${month}월 ${date}일 (${dayStr})` : `${month}/${date} (${dayStr})`
 
-    if (dayOffset === 0) return baseDate + (language === 'ko' ? ' - 오늘' : ' - Today')
-    if (dayOffset === 1) return baseDate + (language === 'ko' ? ' - 내일' : ' - Tomorrow')
-    return baseDate
+    let relative = ''
+    if (dayOffset === 0) relative = language === 'ko' ? '오늘' : 'Today'
+    else if (dayOffset === 1) relative = language === 'ko' ? '내일' : 'Tomorrow'
+
+    return { date: baseDate, relative }
+  }
+
+  const { date: headerDate, relative: headerRelative } = displayDate()
+
+  // Swipe handlers
+  const minSwipeDistance = 50
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEndX(null)
+    setTouchStartX(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return
+    const distance = touchStartX - touchEndX
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe && dayOffset < weatherArray.length - 1) {
+      setDayOffset(prev => prev + 1) // next day
+    }
+    if (isRightSwipe && dayOffset > 0) {
+      setDayOffset(prev => prev - 1) // previous day
+    }
   }
 
   const upwears = items.filter((i) => i.category === 'upwear')
@@ -42,9 +74,11 @@ export default function HomePage() {
   return (
     <div className="space-y-6 py-2">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold">{t('home.weatherTitle')}</h2>
-          <p className="text-sm font-medium text-gray-500 mt-1">{displayDate()}</p>
+        <div className="flex items-end gap-2">
+          <h2 className="text-2xl font-bold">{headerDate}</h2>
+          {headerRelative && (
+            <span className="text-sm font-medium text-gray-400 mb-1">{headerRelative}</span>
+          )}
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -64,7 +98,14 @@ export default function HomePage() {
         </div>
       </div>
 
-      <WeatherWidget weather={currentWeather} loading={loading} error={error} refetch={refetch} />
+      <div
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        className="touch-pan-y"
+      >
+        <WeatherWidget weather={currentWeather} loading={loading} error={error} refetch={refetch} />
+      </div>
 
       {/* 내 옷장 요약 */}
       <div className="rounded-2xl border bg-white p-4 space-y-3">
