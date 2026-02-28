@@ -23,7 +23,7 @@ const AGE_GROUPS = [
 
 export default function LoginPage() {
   const router = useRouter()
-  const { signIn, signUp, resetPassword } = useAuth()
+  const { signIn, signUp, resetPassword, signInWithGoogle } = useAuth()
   const { t, language, setLanguage } = useTranslation()
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin')
   const [email, setEmail] = useState('')
@@ -209,7 +209,7 @@ export default function LoginPage() {
               <Button
                 variant="outline"
                 className="w-full flex items-center gap-2 justify-center"
-                onClick={() => useAuth().signInWithGoogle()}
+                onClick={() => signInWithGoogle()}
               >
                 <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4" />
                 {t('auth.continueWithGoogle')}
