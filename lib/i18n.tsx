@@ -132,6 +132,7 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'weather.temp': '기온',
         'weather.feelsLike': '체감',
         'weather.humidity': '습도',
+        'weather.loadingRetry': '날씨 정보를 불러오는 중... (다시 시도하려면 클릭)',
 
         'contact.developedBy': 'Developed by',
         'contact.tagline': 'AI 기반 날씨 연동 맞춤 코디 추천 앱',
@@ -263,6 +264,7 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'weather.temp': 'Temp',
         'weather.feelsLike': 'Feels Like',
         'weather.humidity': 'Humidity',
+        'weather.loadingRetry': 'Loading weather... (Click to retry)',
 
         'contact.developedBy': 'Developed by',
         'contact.tagline': 'AI-powered weather-based outfit recommendations',

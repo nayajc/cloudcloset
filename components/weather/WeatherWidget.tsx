@@ -2,6 +2,7 @@
 
 import { Cloud, Droplets, Thermometer } from 'lucide-react'
 import type { WeatherData } from '@/lib/types'
+import { useTranslation } from '@/lib/i18n'
 
 interface Props {
   weather: WeatherData | null
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function WeatherWidget({ weather, loading, error, refetch }: Props) {
+  const { t } = useTranslation()
   if (loading) {
     return (
       <div className="rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-4 text-white animate-pulse">
@@ -26,7 +28,7 @@ export function WeatherWidget({ weather, loading, error, refetch }: Props) {
         onClick={() => refetch()}
         className="rounded-2xl bg-gray-100 p-4 text-gray-500 text-sm cursor-pointer hover:bg-gray-200 transition-colors"
       >
-        {error ?? '날씨 정보를 불러오는 중... (다시 시도하려면 클릭)'}
+        {error ?? t('weather.loadingRetry')}
       </div>
     )
   }
@@ -48,11 +50,11 @@ export function WeatherWidget({ weather, loading, error, refetch }: Props) {
       <div className="flex gap-4 mt-3 text-sm opacity-90">
         <span className="flex items-center gap-1">
           <Thermometer className="w-3 h-3" />
-          체감 {weather.feelsLike}°C
+          {t('weather.feelsLike')} {weather.feelsLike}°C
         </span>
         <span className="flex items-center gap-1">
           <Droplets className="w-3 h-3" />
-          습도 {weather.humidity}%
+          {t('weather.humidity')} {weather.humidity}%
         </span>
       </div>
     </div>
