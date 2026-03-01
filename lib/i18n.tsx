@@ -125,6 +125,8 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'recommend.buttonAgain': '다시 추천받기',
         'recommend.loading': 'AI가 코디 추천 중...',
         'recommend.resultTitle': '추천 코디',
+        'recommend.preview': '미리보기 (베타)',
+        'recommend.previewLoading': 'AI가 옷을 입혀보고 있어요...',
 
         'history.title': '내 스타일',
         'history.desc': '내가 찜한 코디들을 모아보세요',
@@ -258,6 +260,8 @@ const dictionaries: Record<Language, Record<string, string>> = {
         'recommend.buttonAgain': 'Get Different Recommendations',
         'recommend.loading': 'AI is generating outfits...',
         'recommend.resultTitle': 'Recommended Outfits',
+        'recommend.preview': 'Preview (Beta)',
+        'recommend.previewLoading': 'AI is trying on the clothes...',
 
         'history.title': 'My Style',
         'history.desc': 'Check out your favorite saved outfits',

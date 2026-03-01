@@ -6,6 +6,7 @@ import { Heart, Sparkles, Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/lib/i18n'
 
 interface Props {
   outfit: OutfitCombo
@@ -22,6 +23,7 @@ const LABEL_COLOR: Record<string, string> = {
 
 export function OutfitCard({ outfit, weather, myStyleId, onRemove }: Props) {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const [isLiked, setIsLiked] = useState(!!myStyleId)
   const [currentStyleId, setCurrentStyleId] = useState<string | null>(myStyleId || null)
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
@@ -204,12 +206,12 @@ export function OutfitCard({ outfit, weather, myStyleId, onRemove }: Props) {
             {isPreviewLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                AI가 옷을 입혀보고 있어요...
+                {t('recommend.previewLoading')}
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                미리보기 (베타)
+                {t('recommend.preview')}
               </>
             )}
           </Button>
