@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Step 1: Create a highly detailed fashion prompt using Gemini text model
-        const promptModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        const promptModel = genAI.getGenerativeModel({ model: 'nano-banana-pro-preview' })
         const stylingPrompt = `
 You are an expert fashion photographer and stylist. Create a highly detailed, photorealistic image prompt for a fashion model wearing an outfit based on these items:
 - Top: ${outfit.upwear_name} (Color: ${outfit.upwear_color || 'any'}, Style: ${outfit.upwear_style || 'any'})
@@ -29,9 +29,9 @@ Output ONLY the English prompt string for an image generation model like Imagen.
         const textResult = await promptModel.generateContent(stylingPrompt)
         let imagePrompt = textResult.response.text().trim()
 
-        // Step 2: Request Image Generation via Gemini REST API (Imagen 3)
+        // Step 2: Request Image Generation via Gemini REST API (Imagen 4)
         const imagenResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict`,
+            `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict`,
             {
                 method: 'POST',
                 headers: {
