@@ -19,12 +19,13 @@ export async function POST(req: NextRequest) {
         // Step 1: Create a highly detailed fashion prompt using Gemini text model
         const promptModel = genAI.getGenerativeModel({ model: 'nano-banana-pro-preview' })
         const stylingPrompt = `
-You are an expert fashion photographer and stylist. Create a highly detailed, photorealistic image prompt for a fashion model wearing an outfit based on these items:
-- Top: ${outfit.upwear_name} (Color: ${outfit.upwear_color || 'any'}, Style: ${outfit.upwear_style || 'any'})
-- Bottom: ${outfit.downwear_name} (Color: ${outfit.downwear_color || 'any'}, Style: ${outfit.downwear_style || 'any'})
-${outfit.onepiece_name ? `- One-piece: ${outfit.onepiece_name} (Color: ${outfit.onepiece_color || 'any'}, Style: ${outfit.onepiece_style || 'any'})` : ''}
+You are an expert fashion photographer and stylist. Create a highly detailed, photorealistic image prompt for a fashion model wearing an outfit based EXACTLY on these items:
+- Top: ${outfit.upwear_name} (Color: ${outfit.upwear_color || 'unspecified'}, Style: ${outfit.upwear_style || 'unspecified'})
+- Bottom: ${outfit.downwear_name} (Color: ${outfit.downwear_color || 'unspecified'}, Style: ${outfit.downwear_style || 'unspecified'})
+${outfit.onepiece_name ? `- One-piece: ${outfit.onepiece_name} (Color: ${outfit.onepiece_color || 'unspecified'}, Style: ${outfit.onepiece_style || 'unspecified'})` : ''}
 
-Output ONLY the English prompt string for an image generation model like Imagen. The prompt should describe a photorealistic, fashion editorial style, full body shot of a model wearing these specific clothes with a neutral or street background. DO NOT output any other text or markdown.
+CRITICAL: The generated prompt MUST strictly enforce the exact colors and garment types specified above. Do not alter the colors or add unrelated major garments.
+Output ONLY the English prompt string for an image generation model. The prompt should describe a photorealistic, fashion editorial style, full-body shot of a model wearing THESE SPECIFIC clothes with a neutral or street background. DO NOT output any other text, explanations, or markdown.
 `
         const textResult = await promptModel.generateContent(stylingPrompt)
         let imagePrompt = textResult.response.text().trim()

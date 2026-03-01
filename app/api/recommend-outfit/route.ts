@@ -144,12 +144,18 @@ Rules for the reason field:
         upwear_name: up?.name ?? '',
         upwear_image: up?.image_url ?? '',
         upwear_location: up?.location ?? null,
+        upwear_color: up?.colors?.join(', ') ?? '',
+        upwear_style: up?.style ?? '',
         downwear_name: down?.name ?? '',
         downwear_image: down?.image_url ?? '',
         downwear_location: down?.location ?? null,
+        downwear_color: down?.colors?.join(', ') ?? '',
+        downwear_style: down?.style ?? '',
         onepiece_name: onep?.name ?? '',
         onepiece_image: onep?.image_url ?? '',
         onepiece_location: onep?.location ?? null,
+        onepiece_color: onep?.colors?.join(', ') ?? '',
+        onepiece_style: onep?.style ?? '',
       }
     })
 

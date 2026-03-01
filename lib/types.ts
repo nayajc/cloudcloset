@@ -22,14 +22,20 @@ export interface OutfitCombo {
   upwear_name?: string
   upwear_image?: string
   upwear_location?: string | null
+  upwear_color?: string
+  upwear_style?: string
   downwear_id?: string
   downwear_name?: string
   downwear_image?: string
   downwear_location?: string | null
+  downwear_color?: string
+  downwear_style?: string
   onepiece_id?: string
   onepiece_name?: string
   onepiece_image?: string
   onepiece_location?: string | null
+  onepiece_color?: string
+  onepiece_style?: string
   reason: string
 }
 
