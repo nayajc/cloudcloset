@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import type { OutfitCombo, WeatherData } from '@/lib/types'
-import { Heart } from 'lucide-react'
+import { Heart, Sparkles, Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   outfit: OutfitCombo
@@ -23,6 +24,33 @@ export function OutfitCard({ outfit, weather, myStyleId, onRemove }: Props) {
   const { user } = useAuth()
   const [isLiked, setIsLiked] = useState(!!myStyleId)
   const [currentStyleId, setCurrentStyleId] = useState<string | null>(myStyleId || null)
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [previewError, setPreviewError] = useState<string | null>(null)
+
+  const handleGeneratePreview = async () => {
+    setIsPreviewLoading(true)
+    setPreviewError(null)
+
+    try {
+      const res = await fetch('/api/generate-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ outfit })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(data.error || 'Failed to generate preview')
+
+      setPreviewImage(data.imageUrl)
+    } catch (err) {
+      console.error(err)
+      setPreviewError(err instanceof Error ? err.message : '오류가 발생했습니다.')
+    } finally {
+      setIsPreviewLoading(false)
+    }
+  }
 
   const handleToggleLike = async () => {
     if (!user) return
@@ -149,9 +177,47 @@ export function OutfitCard({ outfit, weather, myStyleId, onRemove }: Props) {
       )}
 
       <div className="px-4 pb-4">
-        <p className="text-sm text-gray-600 bg-gray-50 rounded-xl p-3 leading-relaxed">
+        <p className="text-sm text-gray-600 bg-gray-50 rounded-xl p-3 leading-relaxed mb-4">
           {outfit.reason}
         </p>
+
+        {previewImage ? (
+          <div className="mt-4 border rounded-xl overflow-hidden shadow-sm relative group bg-gray-50">
+            <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded-md backdrop-blur-sm">
+              AI Generated Preview
+            </div>
+            <img src={previewImage} alt="Outfit Preview" className="w-full h-auto" />
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute top-2 right-2 bg-black/60 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs hover:bg-black/80 transition-colors"
+            >
+              ×
+            </button>
+          </div>
+        ) : (
+          <Button
+            variant="outline"
+            className="w-full flex items-center gap-2 border-orange-200 bg-orange-50/50 hover:bg-orange-100/50 text-orange-600 hover:text-orange-700 font-medium"
+            onClick={handleGeneratePreview}
+            disabled={isPreviewLoading}
+          >
+            {isPreviewLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                AI가 옷을 입혀보고 있어요...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                미리보기 (베타)
+              </>
+            )}
+          </Button>
+        )}
+
+        {previewError && (
+          <p className="text-xs text-red-500 mt-2 text-center">{previewError}</p>
+        )}
       </div>
     </div>
   )
