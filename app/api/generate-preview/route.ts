@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Step 1: Create a highly detailed fashion prompt using Gemini text model
-        const promptModel = genAI.getGenerativeModel({ model: 'nano-banana-pro-preview' })
+        const promptModel = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-image-preview' })
         const stylingPrompt = `
 You are an expert fashion photographer and stylist. Create a highly detailed, photorealistic image prompt for a fashion model wearing an outfit based EXACTLY on these items:
 - Top: ${outfit.upwear_name} (Color: ${outfit.upwear_color || 'unspecified'}, Style: ${outfit.upwear_style || 'unspecified'})
