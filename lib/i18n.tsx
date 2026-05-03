@@ -15,6 +15,18 @@ const I18nContext = createContext<I18nContextProps | undefined>(undefined)
 const dictionaries: Record<Language, Record<string, string>> = {
     ko: {
         'brand.subtitle': '내 옷장 기반 AI 코디 추천',
+
+        'landing.hero': '매일 아침 고민 끝.',
+        'landing.heroSub': '날씨와 내 옷장을 분석해 딱 맞는 코디를 추천해드려요.',
+        'landing.feat1Title': '☁️ 날씨 연동 코디',
+        'landing.feat1Desc': '오늘 기온·날씨에 맞는 옷을 자동으로 골라줘요.',
+        'landing.feat2Title': '🤖 AI 분석',
+        'landing.feat2Desc': '사진 한 장이면 AI가 옷 정보를 자동으로 태깅해요.',
+        'landing.feat3Title': '👗 내 옷장 관리',
+        'landing.feat3Desc': '가진 옷들을 디지털 옷장에 모아두고 쉽게 관리해요.',
+        'landing.feat4Title': '✨ 스타일 히스토리',
+        'landing.feat4Desc': '마음에 든 코디를 찜하고 나만의 스타일 북을 만들어요.',
+        'landing.cta': '지금 무료로 시작하기',
         'auth.email': '이메일',
         'auth.password': '비밀번호',
         'auth.login': '로그인',
@@ -150,6 +162,18 @@ const dictionaries: Record<Language, Record<string, string>> = {
     },
     en: {
         'brand.subtitle': 'AI Outfit Recommendations based on your wardrobe',
+
+        'landing.hero': 'No more morning outfit stress.',
+        'landing.heroSub': 'Get AI-powered outfit recommendations based on today\'s weather and your wardrobe.',
+        'landing.feat1Title': '☁️ Weather-Smart Outfits',
+        'landing.feat1Desc': 'Automatically picks clothes suited to today\'s temperature and conditions.',
+        'landing.feat2Title': '🤖 AI Analysis',
+        'landing.feat2Desc': 'Just upload a photo — AI tags your clothing details automatically.',
+        'landing.feat3Title': '👗 Digital Wardrobe',
+        'landing.feat3Desc': 'Store and manage all your clothes in one place.',
+        'landing.feat4Title': '✨ Style History',
+        'landing.feat4Desc': 'Save favorite outfits and build your personal style book.',
+        'landing.cta': 'Start for free',
         'auth.email': 'Email',
         'auth.password': 'Password',
         'auth.login': 'Log in',
